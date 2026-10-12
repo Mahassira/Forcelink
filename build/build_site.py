@@ -366,20 +366,18 @@ PAGE_BANNER = {
 def page_header(key, root, path, trail, eyebrow, h1, lead):
     name = PAGE_BANNER[key]
     desk, mob, alt, desk_pos, mob_pos = HEADER_IMAGES[name]
+    base = name
+    mobile_base = f"{name}-mobile"
     return f"""<section class="page-header">
-  <div class="page-header__media">
-    <picture>
-      <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{name}-mobile.webp">
-      <img src="{root}assets/img/headers/{name}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
-    </picture>
-  </div>
-  <div class="page-header__text">
-    <div class="page-header__copy">
-      {breadcrumbs(path, trail)}
-      <p class="eyebrow">{esc(eyebrow)}</p>
-      <h1>{esc(h1)}</h1>
-      <p class="lead">{lead}</p>
-    </div>
+  <picture>
+    <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
+    <img class="page-header__img" src="{root}assets/img/headers/{base}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+  </picture>
+  <div class="container page-header__content">
+    {breadcrumbs(path, trail)}
+    <p class="eyebrow">{esc(eyebrow)}</p>
+    <h1>{esc(h1)}</h1>
+    <p class="lead">{lead}</p>
   </div>
 </section>
 """

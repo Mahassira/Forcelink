@@ -197,29 +197,25 @@ h3{font-size:1.2rem;font-weight:600}
 .page-hero{padding:24px 0 clamp(48px,6vw,80px);border-bottom:1px solid var(--line)}
 .page-hero h1{max-width:20ch;margin-top:36px}
 .page-hero .lead{margin-top:20px}
-/* Inner-page header: navy text panel beside a photograph (stacked on mobile). Text is always on solid navy. */
-.page-header{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);background:var(--navy);color:#fff;border-bottom:1px solid var(--navy)}
-.page-header__media{grid-column:2;grid-row:1;position:relative;min-height:520px;overflow:hidden;background:#EEF2F7}
-.page-header__media picture,.page-header__media img{position:absolute;inset:0;width:100%;height:100%}
-.page-header__media img{display:block;object-fit:cover;object-position:var(--pos-d,50% 50%)}
-.page-header__text{grid-column:1;grid-row:1;display:flex;align-items:center;padding:clamp(56px,6vw,96px) clamp(24px,4vw,56px) clamp(56px,6vw,96px) max(24px,calc((100vw - 1200px) / 2 + 24px))}
-.page-header__copy{max-width:580px;width:100%}
-.page-header .crumbs{padding-top:0;margin-bottom:36px}
-.page-header .crumbs ol,.page-header .crumbs a{color:rgba(255,255,255,.8)}
+/* Inner-page header: same treatment as the home hero, with a white fade into the next section. */
+.page-header{position:relative;overflow:hidden;background:var(--navy);color:#fff;min-height:min(72vh,620px);display:flex;align-items:center}
+.page-header picture{position:absolute;inset:0;display:block}
+.page-header__img{width:100%;height:100%;object-fit:cover;object-position:var(--pos-d,50% 50%)}
+.page-header::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(90deg,rgba(14,48,93,.95) 0%,rgba(14,48,93,.8) 42%,rgba(14,48,93,.15) 100%)}
+.page-header::before{content:"";position:absolute;left:0;right:0;bottom:0;height:160px;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.85) 70%,#fff 100%)}
+.page-header__content{position:relative;z-index:1;padding:96px 0 176px}
+.page-header .crumbs{padding-top:0;margin-bottom:28px}
+.page-header .crumbs ol,.page-header .crumbs a{color:rgba(255,255,255,.85)}
 .page-header .crumbs a:hover{color:#fff}
-.page-header .crumbs li+li::before{color:rgba(255,255,255,.45)}
+.page-header .crumbs li+li::before{color:rgba(255,255,255,.5)}
 .page-header .eyebrow{color:var(--gold);margin-top:0}
-.page-header h1{color:#fff;max-width:18ch;margin-top:18px;font-size:clamp(2.1rem,3.6vw,3.25rem);line-height:1.12}
-.page-header .lead{color:rgba(255,255,255,.9);margin-top:22px}
-@media (max-width:900px){
-  .page-header{grid-template-columns:1fr}
-  .page-header__media{grid-column:1;grid-row:auto;min-height:0;aspect-ratio:4/3}
-  .page-header__media img{object-position:var(--pos-m,50% 50%)}
-  .page-header__text{grid-column:1;grid-row:auto;padding:40px 20px 56px}
-  .page-header .crumbs{margin-bottom:24px}
-}
+.page-header h1{color:#fff;max-width:16ch;margin-top:16px}
+.page-header .lead{color:#E2E8F0;max-width:52ch;margin-top:20px}
 @media (max-width:760px){
-  .page-header__media{aspect-ratio:4/5}
+  .page-header{align-items:flex-end;min-height:min(92vh,620px)}
+  .page-header__img{object-position:var(--pos-m,50% 50%)}
+  .page-header::after{background:linear-gradient(180deg,rgba(14,48,93,.45) 0%,rgba(14,48,93,.9) 62%,rgba(14,48,93,.96) 100%)}
+  .page-header__content{padding:72px 0 140px}
 }
 .product-feature{padding-bottom:56px}
 .product-summary{align-self:center}
