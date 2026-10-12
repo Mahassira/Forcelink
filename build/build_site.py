@@ -62,6 +62,10 @@ MARKETS = [
     ("Europe", "Reported destination market. Shown as a regional designation."),
 ]
 
+EMBLEM_SIZE = (250, 29)  # display size of the footer logo; set by optimise_images()
+
+GLOBE_LEGEND_MARKETS = ["India", "China", "Malaysia", "Vietnam", "Indonesia", "Europe (region)"]
+
 PRODUCTS = [
     {
         "slug": "phosphate-rock",
@@ -292,7 +296,9 @@ def footer_html(root):
   <div class="container">
     <div class="footer-grid">
       <div>
-        <div class="footer-logo"><img src="{root}assets/img/forcelink-logo.svg" alt="{esc(COMPANY['name'])}" width="240" height="31" loading="lazy"></div>
+        <div class="footer-brand">
+          <img class="footer-logo" src="{root}assets/img/forcelink-footer-logo.png" alt="{esc(COMPANY['name'])}" width="{EMBLEM_SIZE[0]}" height="{EMBLEM_SIZE[1]}" loading="lazy">
+        </div>
         <p class="footer-desc">International trading of fertilizers and related raw materials, based in Dubai, United Arab Emirates. Established {COMPANY['founded']}.</p>
       </div>
       <nav aria-label="Footer: company">
@@ -326,6 +332,41 @@ def footer_html(root):
     </div>
   </div>
 </footer>"""
+
+
+# Header banners for inner pages. Four supplied photographs, reused by page subject.
+# Each entry: source file in source-assets/ (without the banner- prefix and .png),
+# and the alt text. Edit PAGE_BANNER to change which photograph a page uses.
+BANNER_IMAGES = {
+    # (source file, alt text, object-position for the wide crop)
+    "seeding": ("banner-seeding.png", "A hand sowing granules onto soil", "center 78%"),
+    "warehouse": ("banner-warehouse.png", "Fertilizer bags stacked on pallets in a storage warehouse", "center 40%"),
+    "granules": ("banner-granules.png", "Fertilizer granules in white, pink and brown", "center 50%"),
+    "plant": ("banner-plant.png", "An industrial processing plant beside water, with a quarried hillside in the foreground", "center 45%"),
+}
+PAGE_BANNER = {
+    "about": "seeding",
+    "contact": "seeding",
+    "markets": "warehouse",
+    "products": "granules",
+    "phosphate-rock": "plant",
+    "dap": "granules",
+    "ssp": "granules",
+    "tsp": "granules",
+    "urea": "granules",
+    "sulfur": "warehouse",
+}
+
+
+def banner_html(key, root):
+    name = PAGE_BANNER[key]
+    _src, alt, pos = BANNER_IMAGES[name]
+    return f"""  <div class="container">
+    <figure class="page-banner">
+      <img src="{root}assets/img/banners/{name}.webp" alt="{esc(alt)}" width="1050" height="1050" style="object-position:{pos}">
+    </figure>
+  </div>
+"""
 
 
 def page(path, title, description, body, current="", jsonld=(), scripts=()):
@@ -502,9 +543,15 @@ def home_page():
       <p>We focus on the international trading of fertilizers and related raw materials, connecting products with buyers across Asia and Europe. Our approach is commercially direct: clear product information, clear terms and regular communication with the people we work with.</p>
       <p><a class="link-arrow" href="about/">Learn More About Us</a></p>
     </div>
-    <figure style="margin:0">
-      <div class="globe" id="globe" aria-hidden="true"><div class="globe-fallback"></div></div>
-      <figcaption class="note" style="text-align:center;margin-top:16px">Decorative visual. It does not indicate locations, shipment routes or market shares.</figcaption>
+    <figure class="globe-figure" style="margin:0">
+      <div class="globe" id="globe" role="img" aria-label="Illustrative globe showing arcs from Dubai, United Arab Emirates, to the reported destination markets: India, China, Malaysia, Vietnam, Indonesia and Europe.">
+        <div class="globe-fallback" aria-hidden="true"></div>
+      </div>
+      <ul class="globe-legend" aria-label="Map legend">
+        <li><span class="sw sw--base" aria-hidden="true"></span><span><strong>Dubai, UAE</strong> — Company base</span></li>
+        {''.join(f'<li><span class="sw sw--dest" aria-hidden="true"></span><span>{esc(label)}</span></li>' for label in GLOBE_LEGEND_MARKETS)}
+      </ul>
+      <figcaption class="note globe-caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
     </figure>
   </div>
 </section>"""
@@ -550,7 +597,7 @@ def home_page():
         body,
         current="home",
         jsonld=jsonld,
-        scripts=("globe.js",),
+        scripts=("geo.js", "globe.js"),
     )
 
 
@@ -565,7 +612,7 @@ def about_page():
     <h1>A focused international fertilizer trading business</h1>
     <p class="lead">{esc(COMPANY['name'])} is based in Dubai, United Arab Emirates, and was established in {COMPANY['founded']}. The company focuses on the international trading of fertilizers and related raw materials.</p>
   </div>
-</section>"""
+{banner_html('about', r)}</section>"""
 
     story = f"""<section class="section">
   <div class="container split">
@@ -670,7 +717,7 @@ def products_index_page():
     <h1>Fertilizer and raw material portfolio</h1>
     <p class="lead">Six products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request.</p>
   </div>
-</section>"""
+{banner_html('products', r)}</section>"""
     grid = "\n".join(product_card(p, r) for p in PRODUCTS)
     body = hero + f"""<section class="section">
   <div class="container">
@@ -712,7 +759,7 @@ def product_page(p):
       <img src="{r}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800">
     </div>
   </div>
-</section>"""
+{banner_html(p['slug'], r)}</section>"""
 
     overview = f"""<section class="section">
   <div class="container prose">
@@ -801,7 +848,7 @@ def markets_page():
     <h1>International market focus</h1>
     <p class="lead">FORCE LINK reports destination markets across Asia and Europe. Our trading activity connects fertilizer supply with buyers in these regions.</p>
   </div>
-</section>"""
+{banner_html('markets', r)}</section>"""
 
     map_block = f"""<section class="section" style="padding-bottom:40px">
   <div class="container">
@@ -867,9 +914,9 @@ def contact_page():
     <h1>Discuss your requirements</h1>
     <p class="lead">Contact our team to discuss your product requirements and potential trading opportunities.</p>
   </div>
-</section>"""
+{banner_html('contact', r)}</section>"""
 
-    product_options = '<option value="">Select a product</option>\n' + "\n".join(
+    product_options ='<option value="">Select a product</option>\n' + "\n".join(
         f'<option value="{p["slug"]}">{esc(p["name"])}</option>' for p in PRODUCTS
     )
     market_options = '<option value="">Select a market (optional)</option>\n' + "\n".join(
@@ -1014,9 +1061,26 @@ def optimise_images():
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
 
+    banner_dir = img_dir / "banners"
+    banner_dir.mkdir(parents=True, exist_ok=True)
+    for key, (src_name, _alt, _pos) in BANNER_IMAGES.items():
+        save_webp(src_name, banner_dir / f"{key}.webp", width=1050, quality=82)
+
     for p in PRODUCTS:
         keep = p["slug"] == "phosphate-rock"  # transparent background
         save_webp(p["source"], prod_dir / f"{p['slug']}.webp", width=800, quality=82, keep_alpha=keep)
+
+    # Footer logo: supplied reversed (white) wordmark for dark backgrounds, cropped to its visible bounds. Not recoloured or redrawn.
+    global EMBLEM_SIZE
+    emblem = Image.open(SRC / "footer-logo-reversed.png").convert("RGBA")
+    alpha_box = emblem.getchannel("A").getbbox()
+    if alpha_box:
+        pad = 4
+        l, t, r, b = alpha_box
+        emblem = emblem.crop((max(0, l - pad), max(0, t - pad), min(emblem.width, r + pad), min(emblem.height, b + pad)))
+    emblem.save(img_dir / "forcelink-footer-logo.png", "PNG", optimize=True)
+    display_w = 250
+    EMBLEM_SIZE = (display_w, round(emblem.height * display_w / emblem.width))
 
     # Social sharing image (1200x630), centred crop of the hero.
     hero = Image.open(SRC / "HeroDesktop.png").convert("RGB")

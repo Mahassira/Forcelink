@@ -8,7 +8,9 @@ Static corporate website (7 page types, 11 HTML pages) for FORCE LINK GENERAL TR
 build/build_site.py        Generator: all copy, product data, page templates, image optimisation
 static/assets/css/site.css Design system and layout
 static/assets/js/main.js   Navigation, reveal, count-up, inquiry form
-static/assets/js/globe.js  Decorative Three.js globe (home page only, CSS fallback)
+static/assets/js/geo.js     Lat/lon maths for markers and arcs (shared, testable)
+static/assets/js/globe.js   Market-connections globe: Three.js, home page only, CSS fallback
+tests/geo.test.js          Node tests for coordinates and arc alignment (`node tests/geo.test.js`)
 source-assets/             Original brand assets supplied by the company (do not edit)
 site/                      Generated output (what GitHub Pages serves)
 .github/workflows/pages.yml  Build and deploy to GitHub Pages
@@ -52,6 +54,7 @@ a provider, create the form, and then update `static/assets/js/main.js` and the 
   (currently "Request Product Information" only).
 - Apple touch icon (PNG) and a dedicated social image; the current OG image is a crop of the hero photo.
 - Confirmation of which product image file corresponds to each product (filenames were used as supplied).
+- Confirmation that the market coordinates on the globe are acceptable as representative (they are country-level points, not shipment data).
 
 ## Notes
 
