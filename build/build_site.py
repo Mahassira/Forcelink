@@ -345,13 +345,15 @@ HEADER_IMAGES = {
                  "Fertilizer granules in white, pink and brown", "50% 50%", "50% 50%"),
     "contact": ("header-contact.jpg", "header-contact-mobile.jpg",
                 "A keyboard with blue keys marked contact us, phone and email", "50% 50%", "50% 50%"),
+    "ship": ("HeroDesktop.png", "HeroMobile.png",
+             "Aerial view of a bulk carrier at sea, its cargo hatches and deck marked with the FORCE LINK emblem", "center", "center"),
     "plant": ("header-plant.jpg", "header-plant-mobile.jpg",
               "An industrial processing plant beside water, with a quarried hillside in the foreground", "50% 60%", "40% 50%"),
 }
 # Which photograph each page uses. Change a value here to swap the image for a page.
 PAGE_BANNER = {
     "about": "hand-plant",
-    "markets": "seeding",
+    "markets": "ship",
     "contact": "contact",
     "products": "granules",
     "phosphate-rock": "plant",
@@ -502,8 +504,8 @@ def home_page():
     r = "./"
     hero = f"""<section class="hero">
   <picture>
-    <source media="(max-width: 760px)" srcset="{r}assets/img/hero-mobile.webp" type="image/webp">
-    <img class="hero-img" src="{r}assets/img/hero-desktop.webp" alt="Aerial view of a bulk carrier at sea, its cargo hatches and deck marked with the FORCE LINK emblem" width="1920" height="1080" fetchpriority="high">
+    <source media="(max-width: 760px)" srcset="{r}assets/img/headers/seeding-mobile.webp" type="image/webp">
+    <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="A hand sowing granules onto soil" width="1920" height="1080" fetchpriority="high">
   </picture>
   <div class="container hero-content">
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>

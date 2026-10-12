@@ -318,7 +318,9 @@ h3{font-size:1.2rem;font-weight:600}
 .product-intro .lead{margin-top:16px}
 .product-intro .product-cta{margin-top:28px}
 
-/* Equal-size buttons on phones: every button fills the same width. */
+/* Phones: paired call-to-action buttons share one compact width, stacked neatly. */
 @media (max-width:760px){
-  .btn{display:flex;width:100%;justify-content:center;text-align:center;white-space:normal}
+  .hero-actions,.product-cta{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .product-intro .product-cta{align-items:flex-start}
+  .hero-actions .btn,.product-cta .btn{width:100%;max-width:240px;min-height:44px;padding:.6rem 1rem;font-size:.92rem;white-space:normal}
 }
