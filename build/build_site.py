@@ -337,20 +337,22 @@ def footer_html(root):
 # Page headers for inner pages. Four supplied photographs, each with a desktop and a mobile version.
 # HEADER_IMAGES: key -> (desktop file, mobile file, alt text, desktop object-position, mobile object-position)
 HEADER_IMAGES = {
-    "seeding": ("header-seeding.png", "header-seeding-mobile.png",
+    "seeding": ("header-seeding.jpg", "header-seeding-mobile.jpg",
                 "A hand sowing granules onto soil", "62% 50%", "50% 62%"),
-    "hand-plant": ("header-hand-plant.png", "header-hand-plant-mobile.png",
+    "hand-plant": ("header-hand-plant.jpg", "header-hand-plant-mobile.jpg",
                    "A hand holding fertilizer granules beside a young plant", "50% 50%", "50% 45%"),
-    "granules": ("header-granules.png", "header-granules-mobile.png",
+    "granules": ("header-granules.jpg", "header-granules-mobile.jpg",
                  "Fertilizer granules in white, pink and brown", "50% 50%", "50% 50%"),
-    "plant": ("header-plant.png", "header-plant-mobile.png",
+    "contact": ("header-contact.jpg", "header-contact-mobile.jpg",
+                "A keyboard with blue keys marked contact us, phone and email", "50% 50%", "50% 50%"),
+    "plant": ("header-plant.jpg", "header-plant-mobile.jpg",
               "An industrial processing plant beside water, with a quarried hillside in the foreground", "50% 60%", "40% 50%"),
 }
 # Which photograph each page uses. Change a value here to swap the image for a page.
 PAGE_BANNER = {
     "about": "hand-plant",
     "markets": "seeding",
-    "contact": "granules",
+    "contact": "contact",
     "products": "granules",
     "phosphate-rock": "plant",
     "dap": "hand-plant",
@@ -557,16 +559,6 @@ def home_page():
       <p>We focus on the international trading of fertilizers and related raw materials, connecting products with buyers across Asia and Europe. Our approach is commercially direct: clear product information, clear terms and regular communication with the people we work with.</p>
       <p><a class="link-arrow" href="about/">Learn More About Us</a></p>
     </div>
-    <figure class="globe-figure" style="margin:0">
-      <div class="globe" id="globe" role="img" aria-label="Illustrative globe showing arcs from Dubai, United Arab Emirates, to the reported destination markets: India, China, Malaysia, Vietnam, Indonesia and Europe.">
-        <div class="globe-fallback" aria-hidden="true"></div>
-      </div>
-      <ul class="globe-legend" aria-label="Map legend">
-        <li><span class="sw sw--base" aria-hidden="true"></span><span><strong>Dubai, UAE</strong> — Company base</span></li>
-        {''.join(f'<li><span class="sw sw--dest" aria-hidden="true"></span><span>{esc(label)}</span></li>' for label in GLOBE_LEGEND_MARKETS)}
-      </ul>
-      <figcaption class="note globe-caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
-    </figure>
   </div>
 </section>"""
 
@@ -611,7 +603,7 @@ def home_page():
         body,
         current="home",
         jsonld=jsonld,
-        scripts=("geo.js", "globe.js"),
+        scripts=(),
     )
 
 
@@ -626,7 +618,7 @@ def about_page():
     story = f"""<section class="section">
   <div class="container split">
     <div class="image-panel reveal">
-      <img src="{r}assets/img/hero-desktop.webp" alt="Aerial view of a bulk carrier at sea" width="1920" height="1080">
+      <img src="{r}assets/img/about-plant.webp" alt="Industrial processing plant beside a lake, with quarried rock in the foreground" width="1000" height="1000">
     </div>
     <div class="prose">
       <p class="eyebrow">Our positioning</p>
@@ -1053,6 +1045,8 @@ def optimise_images():
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
+
+    save_webp("about-plant.jpg", img_dir / "about-plant.webp", width=1000, quality=84)
 
     header_dir = img_dir / "headers"
     header_dir.mkdir(parents=True, exist_ok=True)
