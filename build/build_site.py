@@ -737,15 +737,16 @@ def product_page(p):
     path = f"products/{p['slug']}/"
     r = root_for(path)
     trail = [("Home", ""), ("Products", "products/"), (p["name"], path)]
-    hero = page_header(p["slug"], r, path, trail, p["tag"], p["name"], esc(p["lead"])) + f"""<section class="section product-feature">
-  <div class="container grid grid-2 product-hero">
-    <div class="product-visual">
+    hero = f"""<section class="section product-intro">
+  <div class="container">
+    {breadcrumbs(path, trail)}
+    <figure class="product-intro__figure">
       <img src="{r}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800">
-    </div>
-    <div class="product-summary">
-      <p class="eyebrow">Product information</p>
-      <h2>{esc(p['name'])}</h2>
-      <p>Request the technical details and documentation for {esc(p['name'])}, or contact our team to discuss your requirements.</p>
+    </figure>
+    <div class="product-intro__text">
+      <p class="eyebrow">{esc(p['tag'])}</p>
+      <h1>{esc(p['name'])}</h1>
+      <p class="lead">{esc(p['lead'])}</p>
       <div class="product-cta">
         <a class="btn btn--gold" href="{r}contact/?product={p['slug']}">Request Product Information</a>
         <a class="btn btn--line" href="{r}contact/">Contact Our Team</a>
