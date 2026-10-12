@@ -297,7 +297,7 @@ def footer_html(root):
     <div class="footer-grid">
       <div>
         <div class="footer-brand">
-          <img class="footer-logo" src="{root}assets/img/forcelink-footer-logo.png" alt="{esc(COMPANY['name'])}" width="{EMBLEM_SIZE[0]}" height="{EMBLEM_SIZE[1]}" loading="lazy">
+          <img class="footer-logo" src="{root}assets/img/forcelink-footer-logo.png" alt="{esc(COMPANY['name'])}" width="{EMBLEM_SIZE[0]}" height="{EMBLEM_SIZE[1]}">
         </div>
         <p class="footer-desc">International trading of fertilizers and related raw materials, based in Dubai, United Arab Emirates. Established {COMPANY['founded']}.</p>
       </div>
@@ -334,38 +334,52 @@ def footer_html(root):
 </footer>"""
 
 
-# Header banners for inner pages. Four supplied photographs, reused by page subject.
-# Each entry: source file in source-assets/ (without the banner- prefix and .png),
-# and the alt text. Edit PAGE_BANNER to change which photograph a page uses.
-BANNER_IMAGES = {
-    # (source file, alt text, object-position for the wide crop)
-    "seeding": ("banner-seeding.png", "A hand sowing granules onto soil", "center 78%"),
-    "warehouse": ("banner-warehouse.png", "Fertilizer bags stacked on pallets in a storage warehouse", "center 40%"),
-    "granules": ("banner-granules.png", "Fertilizer granules in white, pink and brown", "center 50%"),
-    "plant": ("banner-plant.png", "An industrial processing plant beside water, with a quarried hillside in the foreground", "center 45%"),
+# Page headers for inner pages. Four supplied photographs, each with a desktop and a mobile version.
+# HEADER_IMAGES: key -> (desktop file, mobile file, alt text, desktop object-position, mobile object-position)
+HEADER_IMAGES = {
+    "seeding": ("header-seeding.png", "header-seeding-mobile.png",
+                "A hand sowing granules onto soil", "62% 50%", "50% 62%"),
+    "hand-plant": ("header-hand-plant.png", "header-hand-plant-mobile.png",
+                   "A hand holding fertilizer granules beside a young plant", "50% 50%", "50% 45%"),
+    "granules": ("header-granules.png", "header-granules-mobile.png",
+                 "Fertilizer granules in white, pink and brown", "50% 50%", "50% 50%"),
+    "plant": ("header-plant.png", "header-plant-mobile.png",
+              "An industrial processing plant beside water, with a quarried hillside in the foreground", "50% 60%", "40% 50%"),
 }
+# Which photograph each page uses. Change a value here to swap the image for a page.
 PAGE_BANNER = {
-    "about": "seeding",
-    "contact": "seeding",
-    "markets": "warehouse",
+    "about": "hand-plant",
+    "markets": "seeding",
+    "contact": "granules",
     "products": "granules",
     "phosphate-rock": "plant",
-    "dap": "granules",
+    "dap": "hand-plant",
     "ssp": "granules",
-    "tsp": "granules",
+    "tsp": "seeding",
     "urea": "granules",
-    "sulfur": "warehouse",
+    "sulfur": "plant",
 }
 
 
-def banner_html(key, root):
+def page_header(key, root, path, trail, eyebrow, h1, lead):
     name = PAGE_BANNER[key]
-    _src, alt, pos = BANNER_IMAGES[name]
-    return f"""  <div class="container">
-    <figure class="page-banner">
-      <img src="{root}assets/img/banners/{name}.webp" alt="{esc(alt)}" width="1050" height="1050" style="object-position:{pos}">
-    </figure>
+    desk, mob, alt, desk_pos, mob_pos = HEADER_IMAGES[name]
+    return f"""<section class="page-header">
+  <div class="page-header__media">
+    <picture>
+      <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{name}-mobile.webp">
+      <img src="{root}assets/img/headers/{name}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+    </picture>
   </div>
+  <div class="page-header__text">
+    <div class="page-header__copy">
+      {breadcrumbs(path, trail)}
+      <p class="eyebrow">{esc(eyebrow)}</p>
+      <h1>{esc(h1)}</h1>
+      <p class="lead">{lead}</p>
+    </div>
+  </div>
+</section>
 """
 
 
@@ -459,7 +473,7 @@ def cta_band(root, heading, text, primary=("Contact Our Team", "contact/")):
 
 def product_card(p, root):
     return f"""<a class="product-card reveal" href="{root}products/{p['slug']}/">
-  <div class="thumb"><img src="{root}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800" loading="lazy"></div>
+  <div class="thumb"><img src="{root}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800"></div>
   <div class="body">
     <span class="tag">{esc(p['tag'])}</span>
     <h3>{esc(p['name'])}</h3>
@@ -560,7 +574,7 @@ def home_page():
     markets = f"""<section class="section section--off" aria-labelledby="markets-heading">
   <div class="container split">
     <figure class="figure reveal" style="margin:0">
-      <img src="{r}assets/img/map.webp" alt="World map with highlighted markers across Asia and Europe" width="1920" height="1080" loading="lazy">
+      <img src="{r}assets/img/map.webp" alt="World map with highlighted markers across Asia and Europe" width="1920" height="1080">
       <figcaption>Illustrative map. Markers show the company's reported destination markets. They do not represent shipment routes.</figcaption>
     </figure>
     <div>
@@ -605,19 +619,14 @@ def about_page():
     path = "about/"
     r = root_for(path)
     trail = [("Home", ""), ("About", "about/")]
-    hero = f"""<section class="page-hero">
-  <div class="container">
-    {breadcrumbs(path, trail)}
-    <p class="eyebrow" style="margin-top:36px">About us</p>
-    <h1>A focused international fertilizer trading business</h1>
-    <p class="lead">{esc(COMPANY['name'])} is based in Dubai, United Arab Emirates, and was established in {COMPANY['founded']}. The company focuses on the international trading of fertilizers and related raw materials.</p>
-  </div>
-{banner_html('about', r)}</section>"""
+    hero = page_header("about", r, path, trail, "About us",
+                       "A focused international fertilizer trading business",
+                       f"{esc(COMPANY['name'])} is based in Dubai, United Arab Emirates, and was established in {COMPANY['founded']}. The company focuses on the international trading of fertilizers and related raw materials.")
 
     story = f"""<section class="section">
   <div class="container split">
     <div class="image-panel reveal">
-      <img src="{r}assets/img/hero-desktop.webp" alt="Aerial view of a bulk carrier at sea" width="1920" height="1080" loading="lazy">
+      <img src="{r}assets/img/hero-desktop.webp" alt="Aerial view of a bulk carrier at sea" width="1920" height="1080">
     </div>
     <div class="prose">
       <p class="eyebrow">Our positioning</p>
@@ -710,14 +719,9 @@ def products_index_page():
     path = "products/"
     r = root_for(path)
     trail = [("Home", ""), ("Products", "products/")]
-    hero = f"""<section class="page-hero">
-  <div class="container">
-    {breadcrumbs(path, trail)}
-    <p class="eyebrow" style="margin-top:36px">Products</p>
-    <h1>Fertilizer and raw material portfolio</h1>
-    <p class="lead">Six products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request.</p>
-  </div>
-{banner_html('products', r)}</section>"""
+    hero = page_header("products", r, path, trail, "Products",
+                       "Fertilizer and raw material portfolio",
+                       "Six products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request.")
     grid = "\n".join(product_card(p, r) for p in PRODUCTS)
     body = hero + f"""<section class="section">
   <div class="container">
@@ -743,23 +747,22 @@ def product_page(p):
     path = f"products/{p['slug']}/"
     r = root_for(path)
     trail = [("Home", ""), ("Products", "products/"), (p["name"], path)]
-    hero = f"""<section class="page-hero" style="border-bottom:0;padding-bottom:48px">
+    hero = page_header(p["slug"], r, path, trail, p["tag"], p["name"], esc(p["lead"])) + f"""<section class="section product-feature">
   <div class="container grid grid-2 product-hero">
-    <div>
-      {breadcrumbs(path, trail)}
-      <p class="eyebrow" style="margin-top:36px">{esc(p['tag'])}</p>
-      <h1>{esc(p['name'])}</h1>
-      <p class="lead">{esc(p['lead'])}</p>
+    <div class="product-visual">
+      <img src="{r}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800">
+    </div>
+    <div class="product-summary">
+      <p class="eyebrow">Product information</p>
+      <h2>{esc(p['name'])}</h2>
+      <p>Request the technical details and documentation for {esc(p['name'])}, or contact our team to discuss your requirements.</p>
       <div class="product-cta">
         <a class="btn btn--gold" href="{r}contact/?product={p['slug']}">Request Product Information</a>
         <a class="btn btn--line" href="{r}contact/">Contact Our Team</a>
       </div>
     </div>
-    <div class="product-visual">
-      <img src="{r}assets/img/products/{p['slug']}.webp" alt="{esc(p['alt'])}" width="800" height="800">
-    </div>
   </div>
-{banner_html(p['slug'], r)}</section>"""
+</section>"""
 
     overview = f"""<section class="section">
   <div class="container prose">
@@ -841,14 +844,9 @@ def markets_page():
     path = "markets/"
     r = root_for(path)
     trail = [("Home", ""), ("Markets", "markets/")]
-    hero = f"""<section class="page-hero">
-  <div class="container">
-    {breadcrumbs(path, trail)}
-    <p class="eyebrow" style="margin-top:36px">Markets</p>
-    <h1>International market focus</h1>
-    <p class="lead">FORCE LINK reports destination markets across Asia and Europe. Our trading activity connects fertilizer supply with buyers in these regions.</p>
-  </div>
-{banner_html('markets', r)}</section>"""
+    hero = page_header("markets", r, path, trail, "Markets",
+                       "International market focus",
+                       "FORCE LINK reports destination markets across Asia and Europe. Our trading activity connects fertilizer supply with buyers in these regions.")
 
     map_block = f"""<section class="section" style="padding-bottom:40px">
   <div class="container">
@@ -907,14 +905,9 @@ def contact_page():
     path = "contact/"
     r = root_for(path)
     trail = [("Home", ""), ("Contact", "contact/")]
-    hero = f"""<section class="page-hero" style="padding-bottom:40px">
-  <div class="container">
-    {breadcrumbs(path, trail)}
-    <p class="eyebrow" style="margin-top:36px">Contact</p>
-    <h1>Discuss your requirements</h1>
-    <p class="lead">Contact our team to discuss your product requirements and potential trading opportunities.</p>
-  </div>
-{banner_html('contact', r)}</section>"""
+    hero = page_header("contact", r, path, trail, "Contact",
+                       "Discuss your requirements",
+                       "Contact our team to discuss your product requirements and potential trading opportunities.")
 
     product_options ='<option value="">Select a product</option>\n' + "\n".join(
         f'<option value="{p["slug"]}">{esc(p["name"])}</option>' for p in PRODUCTS
@@ -1061,10 +1054,11 @@ def optimise_images():
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
 
-    banner_dir = img_dir / "banners"
-    banner_dir.mkdir(parents=True, exist_ok=True)
-    for key, (src_name, _alt, _pos) in BANNER_IMAGES.items():
-        save_webp(src_name, banner_dir / f"{key}.webp", width=1050, quality=82)
+    header_dir = img_dir / "headers"
+    header_dir.mkdir(parents=True, exist_ok=True)
+    for key, (desk, mob, _alt, _dp, _mp) in HEADER_IMAGES.items():
+        save_webp(desk, header_dir / f"{key}.webp", width=1920, quality=80)
+        save_webp(mob, header_dir / f"{key}-mobile.webp", width=1080, quality=80)
 
     for p in PRODUCTS:
         keep = p["slug"] == "phosphate-rock"  # transparent background
