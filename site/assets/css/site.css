@@ -212,10 +212,16 @@ h3{font-size:1.2rem;font-weight:600}
 .page-header h1{color:#fff;max-width:16ch;margin-top:16px}
 .page-header .lead{color:#E2E8F0;max-width:52ch;margin-top:20px}
 @media (max-width:760px){
-  .page-header{align-items:flex-end;min-height:min(92vh,620px)}
+  /* Mobile: photo on top, solid navy text panel below. No overlay or white fade, so the text stays crisp. */
+  .page-header{display:block;min-height:0;background:var(--navy)}
+  .page-header picture{position:relative;inset:auto;aspect-ratio:4/5}
   .page-header__img{object-position:var(--pos-m,50% 50%)}
-  .page-header::after{background:linear-gradient(180deg,rgba(14,48,93,.45) 0%,rgba(14,48,93,.9) 62%,rgba(14,48,93,.96) 100%)}
-  .page-header__content{padding:72px 0 140px}
+  .page-header::after,.page-header::before{display:none}
+  .page-header__content{padding:32px 20px 48px}
+  .page-header h1{font-size:clamp(2rem,8vw,2.4rem);margin-top:12px}
+  .page-header .lead{margin-top:16px;font-size:1rem}
+  .page-header .crumbs{margin-bottom:20px}
+}
 }
 .product-feature{padding-bottom:56px}
 .product-summary{align-self:center}
