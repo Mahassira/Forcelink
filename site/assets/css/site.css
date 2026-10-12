@@ -122,9 +122,10 @@ h3{font-size:1.2rem;font-weight:600}
 .hero .eyebrow{color:var(--gold)}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
 @media (max-width:760px){
-  .hero::after{background:linear-gradient(180deg,rgba(14,48,93,.78) 0%,rgba(14,48,93,.86) 100%)}
+  /* Phone: the photograph stays fully visible; only the text sits on a compact navy panel in the middle. */
+  .hero::after{display:none}
   .hero{align-items:center;min-height:min(100vh,760px)}
-  .hero-content{padding:72px 0;text-align:center}
+  .hero-content{width:calc(100% - 32px);max-width:440px;margin:0 auto;padding:28px 22px;text-align:center;background:rgba(14,48,93,.9);border-radius:8px;box-shadow:0 12px 40px rgba(14,48,93,.25)}
   .hero .lead,.hero h1{margin-left:auto;margin-right:auto}
   .hero-actions{justify-content:center}
 }
