@@ -350,11 +350,13 @@ h3{font-size:1.2rem;font-weight:600}
 
 .market-map__caption{font-size:.85rem;line-height:1.5}
 
-/* Home hero on phones: the designed header image (text included) fades out cinematically
-   as the page scrolls toward the first card. --f runs 0 to 1, eased, set by main.js. */
+/* Home hero on phones: the header image's soil continues below the hero down to the first card,
+   so the header and the soil read as one connected surface. */
+.hero-soil{display:none}
 @media (max-width:760px){
   .hero--image{min-height:100vh;min-height:100svh;background:var(--navy)}
+  .hero--image .hero-img{object-position:50% 100%}
   .hero--image .hero-content{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  .hero--image.js-fade picture{will-change:opacity,transform,filter;opacity:calc(1 - var(--f,0));transform:translateY(calc(var(--f,0) * -36px)) scale(calc(1 + var(--f,0) * .08));filter:blur(calc(var(--f,0) * 7px))}
-  .hero--image.js-fade::after{display:block;background:#06152e;opacity:var(--f,0)}
+  .hero-soil{display:block;position:relative;height:150px;background:url("../img/headers/home-soil.webp") 50% 0/100% auto no-repeat #3a2a1c}
+  .hero-soil::after{content:"";position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(180deg,rgba(248,250,252,0),var(--off,#f7f8fa))}
 }

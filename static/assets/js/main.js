@@ -210,35 +210,4 @@
     });
   }
 
-  /* Home hero on phones: the header image fades out cinematically as the page scrolls down.
-     Off for reduced motion. */
-  (function () {
-    var hero = doc.querySelector('.hero--image');
-    var mq = window.matchMedia('(max-width: 760px)');
-    if (!hero || reduceMotion) return;
-    var ticking = false;
-    function update() {
-      ticking = false;
-      var span = hero.offsetHeight || window.innerHeight;
-      var f = Math.max(0, Math.min(1, window.scrollY / (span * 0.85)));
-      var e = f * f * (3 - 2 * f); // eased start and finish
-      hero.style.setProperty('--f', e.toFixed(3));
-    }
-    function onScroll() {
-      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
-    }
-    function apply() {
-      if (mq.matches) {
-        hero.classList.add('js-fade');
-        update();
-        window.addEventListener('scroll', onScroll, { passive: true });
-      } else {
-        hero.classList.remove('js-fade');
-        hero.style.removeProperty('--f');
-        window.removeEventListener('scroll', onScroll);
-      }
-    }
-    apply();
-    if (mq.addEventListener) mq.addEventListener('change', apply); else mq.addListener(apply);
-  })();
 })();

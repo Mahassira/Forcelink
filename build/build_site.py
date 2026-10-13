@@ -616,7 +616,8 @@ def home_page():
     band = cta_band(r, "Discuss Your Fertilizer Requirements",
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
-    body = hero + products + intro + markets + band
+    soil = '<div class="hero-soil" aria-hidden="true"></div>'
+    body = hero + soil + products + intro + markets + band
     jsonld = [{
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -1075,6 +1076,10 @@ def optimise_images():
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     (img_dir / "headers").mkdir(parents=True, exist_ok=True)
+    _home = Image.open(SRC / "home-mobile.png").convert("RGB")
+    # Mirror the soil band so its top row equals the header image's bottom row (no visible seam).
+    _soil = _home.crop((0, _home.height - 420, _home.width, _home.height))
+    _soil.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / "home-soil.webp", "WEBP", quality=82, method=6)
     save_webp("home-mobile.png", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
     save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
