@@ -541,7 +541,7 @@ def market_map_html(root):
 
 def home_page():
     r = "./"
-    hero = f"""<section class="hero">
+    hero = f"""<section class="hero hero--intro">
   <picture>
     <source media="(max-width: 760px)" srcset="{r}assets/img/headers/seeding-mobile.webp" type="image/webp">
     <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="A hand sowing granules onto soil" width="1920" height="1080" fetchpriority="high">
@@ -598,16 +598,13 @@ def home_page():
       <p>We focus on the international trading of fertilizers and related raw materials, connecting products with buyers across Asia and Europe. Our approach is commercially direct: clear product information, clear terms and regular communication with the people we work with.</p>
       <p><a class="link-arrow" href="about/">Learn More About Us</a></p>
     </div>
-{market_map_html(r)}  </div>
+  </div>
 </section>"""
 
     market_items = "\n".join(f"<li>{esc(name)}</li>" for name, _ in MARKETS)
     markets = f"""<section class="section section--off" aria-labelledby="markets-heading">
   <div class="container split">
-    <figure class="figure reveal" style="margin:0">
-      <img src="{r}assets/img/map.webp" alt="World map with highlighted markers across Asia and Europe" width="1920" height="1080">
-      <figcaption>Illustrative map. Markers show the company's reported destination markets. They do not represent shipment routes.</figcaption>
-    </figure>
+    {market_map_html(r)}
     <div>
       <p class="eyebrow">Destination markets</p>
       <h2 id="markets-heading">Connecting markets across Asia and Europe</h2>

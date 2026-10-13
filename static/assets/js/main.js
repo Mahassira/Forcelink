@@ -209,4 +209,32 @@
       }
     });
   }
+
+  /* Home header intro (phones only, once per load): soil falls from the fingers,
+     then the photograph flips and the text panel appears. Skipped for reduced motion. */
+  (function () {
+    var hero = doc.querySelector('.hero.hero--intro');
+    if (!hero || reduceMotion || !window.matchMedia('(max-width: 760px)').matches) return;
+    var layer = doc.createElement('div');
+    layer.className = 'hero-dust';
+    layer.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 44; i++) {
+      var p = doc.createElement('span');
+      var size = 2 + Math.random() * 3.5;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = (44 + Math.random() * 14) + '%';
+      p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
+      p.style.setProperty('--dy', (34 + Math.random() * 12) + 'vh');
+      p.style.animationDelay = (Math.random() * 1.6) + 's';
+      layer.appendChild(p);
+    }
+    hero.appendChild(layer);
+    hero.classList.add('is-intro');
+    window.setTimeout(function () { hero.classList.add('is-flip'); }, 2400);
+    window.setTimeout(function () {
+      hero.classList.remove('is-intro', 'is-flip');
+      if (layer.parentNode) layer.parentNode.removeChild(layer);
+    }, 4200);
+  })();
 })();
