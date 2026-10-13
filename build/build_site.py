@@ -541,7 +541,7 @@ def market_map_html(root):
 
 def home_page():
     r = "./"
-    hero = f"""<section class="hero hero--intro">
+    hero = f"""<section class="hero">
   <picture>
     <source media="(max-width: 760px)" srcset="{r}assets/img/headers/seeding-mobile.webp" type="image/webp">
     <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="A hand sowing granules onto soil" width="1920" height="1080" fetchpriority="high">

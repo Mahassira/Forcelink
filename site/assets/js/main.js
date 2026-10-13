@@ -210,31 +210,34 @@
     });
   }
 
-  /* Home header intro (phones only, once per load): soil falls from the fingers,
-     then the photograph flips and the text panel appears. Skipped for reduced motion. */
+  /* Home hero on phones: the photo fills the first screen. Scrolling down fades the photo
+     out and fades the text in, so the header ends as text only. Off for reduced motion. */
   (function () {
-    var hero = doc.querySelector('.hero.hero--intro');
-    if (!hero || reduceMotion || !window.matchMedia('(max-width: 760px)').matches) return;
-    var layer = doc.createElement('div');
-    layer.className = 'hero-dust';
-    layer.setAttribute('aria-hidden', 'true');
-    for (var i = 0; i < 44; i++) {
-      var p = doc.createElement('span');
-      var size = 2 + Math.random() * 3.5;
-      p.style.width = size + 'px';
-      p.style.height = size + 'px';
-      p.style.left = (44 + Math.random() * 14) + '%';
-      p.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px');
-      p.style.setProperty('--dy', (34 + Math.random() * 12) + 'vh');
-      p.style.animationDelay = (Math.random() * 1.6) + 's';
-      layer.appendChild(p);
+    var hero = doc.querySelector('.hero');
+    var mq = window.matchMedia('(max-width: 760px)');
+    if (!hero || reduceMotion || !hero.querySelector('picture')) return;
+    var ticking = false;
+    function update() {
+      ticking = false;
+      var p = window.scrollY / (window.innerHeight * 0.3);
+      p = Math.max(0, Math.min(1, p));
+      hero.style.setProperty('--p', p.toFixed(3));
     }
-    hero.appendChild(layer);
-    hero.classList.add('is-intro');
-    window.setTimeout(function () { hero.classList.add('is-flip'); }, 2400);
-    window.setTimeout(function () {
-      hero.classList.remove('is-intro', 'is-flip');
-      if (layer.parentNode) layer.parentNode.removeChild(layer);
-    }, 4200);
+    function onScroll() {
+      if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
+    }
+    function apply() {
+      if (mq.matches) {
+        hero.classList.add('js-scroll-hero');
+        update();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      } else {
+        hero.classList.remove('js-scroll-hero');
+        hero.style.removeProperty('--p');
+        window.removeEventListener('scroll', onScroll);
+      }
+    }
+    apply();
+    if (mq.addEventListener) mq.addEventListener('change', apply); else mq.addListener(apply);
   })();
 })();
