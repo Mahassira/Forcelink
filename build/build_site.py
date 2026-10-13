@@ -365,11 +365,31 @@ PAGE_BANNER = {
 }
 
 
+DESIGN_HEADERS = ("about", "markets", "products", "contact")  # phone headers designed with their text baked in
+
+
 def page_header(key, root, path, trail, eyebrow, h1, lead):
     name = PAGE_BANNER[key]
     desk, mob, alt, desk_pos, mob_pos = HEADER_IMAGES[name]
     base = name
     mobile_base = f"{name}-mobile"
+    if key in DESIGN_HEADERS:
+        mobile_base = f"design-{key}"
+        soil = f'<div class="hero-soil" aria-hidden="true" style="background-image:url(\'{root}assets/img/headers/design-{key}-soil.webp\')"></div>'
+        return f"""<section class="page-header page-header--design">
+  <picture>
+    <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
+    <img class="page-header__img" src="{root}assets/img/headers/{base}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+  </picture>
+  <div class="container page-header__content">
+    {breadcrumbs(path, trail)}
+    <p class="eyebrow">{esc(eyebrow)}</p>
+    <h1>{esc(h1)}</h1>
+    <p class="lead">{lead}</p>
+  </div>
+</section>
+{soil}
+"""
     return f"""<section class="page-header">
   <picture>
     <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
@@ -616,7 +636,7 @@ def home_page():
     band = cta_band(r, "Discuss Your Fertilizer Requirements",
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
-    soil = '<div class="hero-soil" aria-hidden="true"></div>'
+    soil = '<div class="hero-soil" aria-hidden="true" style="background-image:url(\'./assets/img/headers/home-soil.webp\')"></div>'
     body = hero + soil + products + intro + markets + band
     jsonld = [{
         "@context": "https://schema.org",
@@ -1076,11 +1096,16 @@ def optimise_images():
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     (img_dir / "headers").mkdir(parents=True, exist_ok=True)
-    _home = Image.open(SRC / "home-mobile.png").convert("RGB")
+    for _k in DESIGN_HEADERS:
+        _d = Image.open(SRC / f"design-{_k}.jpg").convert("RGB")
+        _d.resize((1080, round(_d.height * 1080 / _d.width)), Image.LANCZOS).save(img_dir / "headers" / f"design-{_k}.webp", "WEBP", quality=82, method=6)
+        _strip = _d.crop((0, _d.height - 420, _d.width, _d.height))
+        _strip.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"design-{_k}-soil.webp", "WEBP", quality=82, method=6)
+    _home = Image.open(SRC / "home-mobile.jpg").convert("RGB")
     # Mirror the soil band so its top row equals the header image's bottom row (no visible seam).
     _soil = _home.crop((0, _home.height - 420, _home.width, _home.height))
     _soil.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / "home-soil.webp", "WEBP", quality=82, method=6)
-    save_webp("home-mobile.png", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
+    save_webp("home-mobile.jpg", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
     save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
 

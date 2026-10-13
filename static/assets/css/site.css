@@ -357,6 +357,15 @@ h3{font-size:1.2rem;font-weight:600}
   .hero--image{min-height:100vh;min-height:100svh;background:var(--navy)}
   .hero--image .hero-img{object-position:50% 100%}
   .hero--image .hero-content{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-  .hero-soil{display:block;position:relative;height:150px;background:url("../img/headers/home-soil.webp") 50% 0/100% auto no-repeat #3a2a1c}
+  .hero-soil{display:block;position:relative;height:150px;background-color:#3a2a1c;background-size:100% auto;background-position:50% 0;background-repeat:no-repeat}
   .hero-soil::after{content:"";position:absolute;left:0;right:0;bottom:0;height:55%;background:linear-gradient(180deg,rgba(248,250,252,0),var(--off,#f7f8fa))}
+}
+
+/* Phone page headers designed with their text in the image: the image shows whole, its text is
+   read by screen readers only, and the soil band continues to the first card. */
+@media (max-width:760px){
+  .page-header--design{min-height:100vh;min-height:100svh;display:block}
+  .page-header--design .page-header__img{object-position:50% 100%}
+  .page-header--design::after{display:none}
+  .page-header--design .page-header__content{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 }
