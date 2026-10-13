@@ -350,9 +350,10 @@ h3{font-size:1.2rem;font-weight:600}
 
 .market-map__caption{font-size:.85rem;line-height:1.5}
 
-/* Home hero, phones with JS: photo first, then text only as the page scrolls (--p runs 0 to 1). */
+/* Home hero, phones with JS: the photo stays alone at first. On scroll, a navy screen rises over it
+   and carries the header text (--p runs 0 to 1). */
 @media (max-width:760px){
   .hero.js-scroll-hero{min-height:100vh;min-height:100svh;background:var(--navy)}
-  .js-scroll-hero picture{opacity:clamp(0,calc(1 - var(--p,0) * 1.6),1);transform:scale(calc(1 + var(--p,0) * .05));will-change:opacity,transform}
-  .js-scroll-hero .hero-content{background:none;box-shadow:none;border-radius:0;padding:0 16px;opacity:clamp(0,calc((var(--p,0) - .45) * 2.2),1);transform:translateY(calc((1 - var(--p,0)) * 24px))}
+  .js-scroll-hero .hero-content{position:absolute;inset:0;z-index:2;width:100%;max-width:none;margin:0;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;background:var(--navy);border-radius:0;box-shadow:none;transform:translateY(calc((1 - var(--p,0)) * 100%));will-change:transform}
+  .js-scroll-hero .hero-content > *{max-width:440px;margin-left:auto;margin-right:auto}
 }
