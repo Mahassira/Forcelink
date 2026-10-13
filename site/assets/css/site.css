@@ -325,3 +325,17 @@ h3{font-size:1.2rem;font-weight:600}
   .product-intro .product-cta{align-items:flex-start}
   .hero-actions .btn,.product-cta .btn{width:100%;max-width:240px;min-height:44px;padding:.6rem 1rem;font-size:.92rem;white-space:normal}
 }
+
+/* Markets map: supplied illustration with gold light travelling along each route. */
+.market-map{margin:0}
+.market-map__frame{position:relative;aspect-ratio:1774/887;overflow:hidden;border-radius:6px;background:#050d1f}
+.market-map__frame img{display:block;width:100%;height:100%}
+.market-map__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.mm-track{fill:none;stroke:#D6A72C;stroke-opacity:.22;stroke-width:2;stroke-dasharray:4 6}
+.mm-flow{fill:none;stroke:#FFE08A;stroke-width:3.5;stroke-linecap:round;stroke-dasharray:110 2400;stroke-dashoffset:110;filter:drop-shadow(0 0 4px rgba(255,214,102,.9));animation:mm-flow 4.2s linear infinite}
+@keyframes mm-flow{from{stroke-dashoffset:110}to{stroke-dashoffset:-1400}}
+.mm-pulse{fill:none;stroke:#FFD666;stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center;animation:mm-pulse 2.6s ease-out infinite}
+.mm-pulse--base{stroke:#FFE08A}
+@keyframes mm-pulse{0%{r:6;opacity:.9}100%{r:30;opacity:0}}
+.market-map__caption{margin-top:14px}
+@media (prefers-reduced-motion: reduce){.mm-flow,.mm-pulse{animation:none}.mm-flow{opacity:0}}

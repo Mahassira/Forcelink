@@ -500,6 +500,45 @@ def metric_block(key, root_count=True):
 # ---------------------------------------------------------------------------
 
 
+
+# Markets map (supplied illustration). Marker centres measured in source pixels (1774 x 887).
+MM_W, MM_H = 1774, 887
+MM_BASE = (765, 362)  # Dubai
+MM_ROUTES = [  # name, x, y, arc lift (pixels above the chord; negative = below), pulse delay (s)
+    ("Europe (region)", 435, 160, 120, 0.0),
+    ("China", 1230, 262, 150, 0.6),
+    ("India", 961, 411, 70, 1.2),
+    ("Vietnam", 1244, 476, 150, 1.8),
+    ("Malaysia", 1117, 540, 110, 2.4),
+    ("Indonesia", 1242, 603, -20, 3.0),
+]
+
+
+def market_map_html(root):
+    bx, by = MM_BASE
+    tracks, flows, pulses = [], [], []
+    for name, x, y, lift, delay in MM_ROUTES:
+        mx, my = (bx + x) / 2, (by + y) / 2
+        cx, cy = mx, my - lift
+        d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {x},{y}"
+        tracks.append(f'<path class="mm-track" d="{d}"/>')
+        flows.append(f'<path class="mm-flow" d="{d}" style="animation-delay:{delay}s"/>')
+        pulses.append(f'<circle class="mm-pulse" cx="{x}" cy="{y}" r="8" style="animation-delay:{delay}s"/>')
+    pulses.append(f'<circle class="mm-pulse mm-pulse--base" cx="{bx}" cy="{by}" r="8" style="animation-delay:0s"/>')
+    return f"""<figure class="market-map" style="margin:0">
+  <div class="market-map__frame">
+    <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold arcs to India, China, Malaysia, Vietnam, Indonesia and Europe (region)." width="{MM_W}" height="{MM_H}">
+    <svg class="market-map__svg" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">
+      {''.join(tracks)}
+      {''.join(flows)}
+      {''.join(pulses)}
+    </svg>
+  </div>
+  <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
+</figure>
+"""
+
+
 def home_page():
     r = "./"
     hero = f"""<section class="hero">
@@ -559,7 +598,7 @@ def home_page():
       <p>We focus on the international trading of fertilizers and related raw materials, connecting products with buyers across Asia and Europe. Our approach is commercially direct: clear product information, clear terms and regular communication with the people we work with.</p>
       <p><a class="link-arrow" href="about/">Learn More About Us</a></p>
     </div>
-  </div>
+{market_map_html(r)}  </div>
 </section>"""
 
     market_items = "\n".join(f"<li>{esc(name)}</li>" for name, _ in MARKETS)
@@ -1046,6 +1085,7 @@ def optimise_images():
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
+    save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
 
     save_webp("about-plant.jpg", img_dir / "about-plant.webp", width=1000, quality=84)
 
