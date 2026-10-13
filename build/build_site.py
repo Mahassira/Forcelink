@@ -396,7 +396,7 @@ def page_header(key, root, path, trail, eyebrow, h1, lead):
         return f"""<section class="page-header page-header--design">
   <picture>
     <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
-    <img class="page-header__img" src="{root}assets/img/headers/desk-{key}.webp" alt="{esc(alt)}" width="1366" height="768" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+    <img class="page-header__img" src="{root}assets/img/headers/desk-{key}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
   </picture>
   <div class="container page-header__content">
     {breadcrumbs(path, trail)}
@@ -589,7 +589,7 @@ def home_page():
     hero = f"""<section class="hero hero--image">
   <picture>
     <source media="(max-width: 760px)" srcset="{r}assets/img/headers/home-mobile.webp" type="image/webp">
-    <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1366" height="768" fetchpriority="high">
+    <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1920" height="1080" fetchpriority="high">
   </picture>
   <div class="container hero-content">
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>
