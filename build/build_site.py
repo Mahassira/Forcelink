@@ -534,6 +534,9 @@ MM_ROUTES = [  # name, x, y, arc lift (pixels above the chord; negative = below)
 ]
 
 
+MM_CROP = (560, 140, 1400, 630)  # phone crop around Dubai and its markets (source pixels)
+
+
 def market_map_html(root):
     bx, by = MM_BASE
     tracks, flows, pulses = [], [], []
@@ -545,14 +548,16 @@ def market_map_html(root):
         flows.append(f'<path class="mm-flow" d="{d}" style="animation-delay:{delay}s"/>')
         pulses.append(f'<circle class="mm-pulse" cx="{x}" cy="{y}" r="8" style="animation-delay:{delay}s"/>')
     pulses.append(f'<circle class="mm-pulse mm-pulse--base" cx="{bx}" cy="{by}" r="8" style="animation-delay:0s"/>')
+    inner = ''.join(tracks) + ''.join(flows) + ''.join(pulses)
+    x0, y0, x1, y1 = MM_CROP
     return f"""<figure class="market-map" style="margin:0">
   <div class="market-map__frame">
-    <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
-    <svg class="market-map__svg" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">
-      {''.join(tracks)}
-      {''.join(flows)}
-      {''.join(pulses)}
-    </svg>
+    <picture>
+      <source media="(max-width: 760px)" srcset="{root}assets/img/markets-map-mobile.webp" type="image/webp">
+      <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
+    </picture>
+    <svg class="market-map__svg market-map__svg--d" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
+    <svg class="market-map__svg market-map__svg--m" viewBox="{x0} {y0} {x1 - x0} {y1 - y0}" aria-hidden="true" focusable="false">{inner}</svg>
   </div>
   <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
 </figure>
@@ -669,10 +674,7 @@ def about_page():
                        f"{esc(COMPANY['name'])} is based in Dubai, United Arab Emirates, and was established in {COMPANY['founded']}. The company focuses on the international trading of fertilizers and related raw materials.")
 
     story = f"""<section class="section">
-  <div class="container split">
-    <div class="image-panel reveal">
-      <img src="{r}assets/img/about-plant.webp" alt="Industrial processing plant beside a lake, with quarried rock in the foreground" width="1000" height="1000">
-    </div>
+  <div class="container">
     <div class="prose">
       <p class="eyebrow">Our positioning</p>
       <h2>{esc(COMPANY['tagline'])}</h2>
@@ -1108,6 +1110,8 @@ def optimise_images():
     save_webp("home-mobile.jpg", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
     save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
+    _mm = Image.open(SRC / "markets-map.png").convert("RGB")
+    _mm.crop(MM_CROP).save(img_dir / "markets-map-mobile.webp", "WEBP", quality=86, method=6)
 
     save_webp("about-plant.jpg", img_dir / "about-plant.webp", width=1000, quality=84)
 

@@ -342,7 +342,14 @@ h3{font-size:1.2rem;font-weight:600}
 
 /* Markets map sizing: strokes and pulses scale up on phones so they stay visible at small widths. */
 .market-map{--sw:3.5;--r0:6;--r1:30}
-@media (max-width:760px){.market-map{--sw:11;--r0:16;--r1:80}}
+@media (max-width:760px){
+  .market-map{--sw:7;--r0:9;--r1:44}
+  .market-map__frame{aspect-ratio:840/490}
+  .market-map__svg--d{display:none}
+  .market-map__svg--m{display:block}
+  .market-map__caption{display:none}
+}
+.market-map__svg--m{display:none}
 .mm-flow{stroke-width:var(--sw)}
 .mm-track{stroke-width:calc(var(--sw) * .6);stroke-dasharray:calc(var(--sw) * 1.4) calc(var(--sw) * 2)}
 .mm-pulse{stroke-width:calc(var(--sw) * .8)}
