@@ -566,11 +566,9 @@ def market_map_html(root):
     return f"""<figure class="market-map" style="margin:0">
   <div class="market-map__frame" style="--mm-ar:{MM_W}/{MM_H}">
     <picture>
-      <source media="(max-width: 760px)" srcset="{root}assets/img/markets-map-mobile.webp" type="image/webp">
       <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
     </picture>
     <svg class="market-map__svg market-map__svg--d" viewBox="{MM_DESK[0]} {MM_DESK[1]} {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
-    <svg class="market-map__svg market-map__svg--m" viewBox="{x0} {y0} {x1 - x0} {y1 - y0}" aria-hidden="true" focusable="false">{inner}</svg>
   </div>
   <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
 </figure>
