@@ -350,14 +350,11 @@ h3{font-size:1.2rem;font-weight:600}
 
 .market-map__caption{font-size:.85rem;line-height:1.5}
 
-/* Home hero, phones with JS: the hero is pinned for the first part of the scroll. The photo stays
-   alone, then the navy header card wipes down from the top edge over it (--p runs 0 to 1, eased). */
+/* Home hero on phones: the designed header image (text included) fades out cinematically
+   as the page scrolls toward the first card. --f runs 0 to 1, eased, set by main.js. */
 @media (max-width:760px){
-  .hero-pin--on{height:190vh;height:190svh}
-  .js-scroll-hero picture{background:linear-gradient(180deg,#f1ece4 0%,#d9cfc1 100%)}
-  .js-scroll-hero picture img{mix-blend-mode:multiply}
-  .hero-pin--on .hero{position:sticky;top:0}
-  .hero.js-scroll-hero{min-height:100vh;min-height:100svh;background:var(--navy)}
-  .js-scroll-hero .hero-content{position:absolute;inset:0;z-index:2;width:100%;max-width:none;margin:0;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;background:var(--navy);border-radius:0;box-shadow:none;clip-path:inset(0 0 calc((1 - var(--p,0)) * 100%) 0)}
-  .js-scroll-hero .hero-content > *{max-width:440px;margin-left:auto;margin-right:auto;opacity:clamp(0,calc((var(--p,0) - .6) * 2.5),1)}
+  .hero--image{min-height:100vh;min-height:100svh;background:var(--navy)}
+  .hero--image .hero-content{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  .hero--image.js-fade picture{will-change:opacity,transform,filter;opacity:calc(1 - var(--f,0));transform:translateY(calc(var(--f,0) * -36px)) scale(calc(1 + var(--f,0) * .08));filter:blur(calc(var(--f,0) * 7px))}
+  .hero--image.js-fade::after{display:block;background:#06152e;opacity:var(--f,0)}
 }

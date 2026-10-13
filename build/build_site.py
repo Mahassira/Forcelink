@@ -541,10 +541,10 @@ def market_map_html(root):
 
 def home_page():
     r = "./"
-    hero = f"""<section class="hero">
+    hero = f"""<section class="hero hero--image">
   <picture>
-    <source media="(max-width: 760px)" srcset="{r}assets/img/headers/seeding-mobile.webp" type="image/webp">
-    <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="A hand sowing granules onto soil" width="1920" height="1080" fetchpriority="high">
+    <source media="(max-width: 760px)" srcset="{r}assets/img/headers/home-mobile.webp" type="image/webp">
+    <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1920" height="1080" fetchpriority="high">
   </picture>
   <div class="container hero-content">
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>
@@ -616,7 +616,7 @@ def home_page():
     band = cta_band(r, "Discuss Your Fertilizer Requirements",
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
-    body = f"""<div class="hero-pin">{hero}</div>""" + products + intro + markets + band
+    body = hero + products + intro + markets + band
     jsonld = [{
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -1074,6 +1074,8 @@ def optimise_images():
 
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
+    (img_dir / "headers").mkdir(parents=True, exist_ok=True)
+    save_webp("home-mobile.png", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
     save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
 

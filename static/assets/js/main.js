@@ -210,34 +210,31 @@
     });
   }
 
-  /* Home hero on phones: the photo fills the first screen. Scrolling down fades the photo
-     out and fades the text in, so the header ends as text only. Off for reduced motion. */
+  /* Home hero on phones: the header image fades out cinematically as the page scrolls down.
+     Off for reduced motion. */
   (function () {
-    var hero = doc.querySelector('.hero');
+    var hero = doc.querySelector('.hero--image');
     var mq = window.matchMedia('(max-width: 760px)');
-    if (!hero || reduceMotion || !hero.querySelector('picture')) return;
-    var pin = hero.parentNode;
+    if (!hero || reduceMotion) return;
     var ticking = false;
     function update() {
       ticking = false;
-      var p = window.scrollY / (window.innerHeight * 0.9);
-      p = Math.max(0, Math.min(1, p));
-      var e = p * p * (3 - 2 * p); // ease in and out so the screen settles softly
-      hero.style.setProperty('--p', e.toFixed(3));
+      var span = hero.offsetHeight || window.innerHeight;
+      var f = Math.max(0, Math.min(1, window.scrollY / (span * 0.85)));
+      var e = f * f * (3 - 2 * f); // eased start and finish
+      hero.style.setProperty('--f', e.toFixed(3));
     }
     function onScroll() {
       if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
     }
     function apply() {
       if (mq.matches) {
-        hero.classList.add('js-scroll-hero');
-        if (pin && pin.classList.contains('hero-pin')) pin.classList.add('hero-pin--on');
+        hero.classList.add('js-fade');
         update();
         window.addEventListener('scroll', onScroll, { passive: true });
       } else {
-        hero.classList.remove('js-scroll-hero');
-        if (pin && pin.classList.contains('hero-pin')) pin.classList.remove('hero-pin--on');
-        hero.style.removeProperty('--p');
+        hero.classList.remove('js-fade');
+        hero.style.removeProperty('--f');
         window.removeEventListener('scroll', onScroll);
       }
     }
