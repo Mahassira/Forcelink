@@ -365,6 +365,14 @@ PAGE_BANNER = {
 }
 
 
+def soil_html(root, desk_key, mobile_file):
+    """Two continuation strips: one for desktop, one for phones. Each starts at the header's bottom edge."""
+    return (
+        f'<div class="hero-soil hero-soil--d" aria-hidden="true" style="background-image:url(\'{root}assets/img/headers/desk-{desk_key}-soil.webp\')"></div>'
+        f'<div class="hero-soil hero-soil--m" aria-hidden="true" style="background-image:url(\'{root}assets/img/headers/{mobile_file}\')"></div>'
+    )
+
+
 DESIGN_HEADERS = ("about", "markets", "products", "contact")  # phone headers designed with their text baked in
 
 
@@ -375,11 +383,11 @@ def page_header(key, root, path, trail, eyebrow, h1, lead):
     mobile_base = f"{name}-mobile"
     if key in DESIGN_HEADERS:
         mobile_base = f"design-{key}"
-        soil = f'<div class="hero-soil" aria-hidden="true" style="background-image:url(\'{root}assets/img/headers/design-{key}-soil.webp\')"></div>'
+        soil = soil_html(root, key, f"design-{key}-soil.webp")
         return f"""<section class="page-header page-header--design">
   <picture>
     <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
-    <img class="page-header__img" src="{root}assets/img/headers/{base}.webp" alt="{esc(alt)}" width="1920" height="1080" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+    <img class="page-header__img" src="{root}assets/img/headers/desk-{key}.webp" alt="{esc(alt)}" width="1600" height="1024" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
   </picture>
   <div class="container page-header__content">
     {breadcrumbs(path, trail)}
@@ -574,7 +582,7 @@ def home_page():
     hero = f"""<section class="hero hero--image">
   <picture>
     <source media="(max-width: 760px)" srcset="{r}assets/img/headers/home-mobile.webp" type="image/webp">
-    <img class="hero-img" src="{r}assets/img/headers/seeding.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1920" height="1080" fetchpriority="high">
+    <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1600" height="1024" fetchpriority="high">
   </picture>
   <div class="container hero-content">
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>
@@ -646,7 +654,7 @@ def home_page():
     band = cta_band(r, "Discuss Your Fertilizer Requirements",
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
-    soil = '<div class="hero-soil" aria-hidden="true" style="background-image:url(\'./assets/img/headers/home-soil.webp\')"></div>'
+    soil = soil_html("./", "home", "home-soil.webp")
     body = hero + soil + products + intro + markets + band
     jsonld = [{
         "@context": "https://schema.org",
@@ -1103,6 +1111,12 @@ def optimise_images():
     save_webp("HeroDesktop.png", img_dir / "hero-desktop.webp", width=1920, quality=78)
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     (img_dir / "headers").mkdir(parents=True, exist_ok=True)
+    for _k in ("home", "about", "products", "markets", "contact"):
+        _w = Image.open(SRC / f"desk-{_k}.png").convert("RGB")
+        _w = _w.resize((2400, round(_w.height * 2400 / _w.width)), Image.LANCZOS)
+        _w.save(img_dir / "headers" / f"desk-{_k}.webp", "WEBP", quality=80, method=6)
+        _ws = _w.crop((0, _w.height - 320, _w.width, _w.height))
+        _ws.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"desk-{_k}-soil.webp", "WEBP", quality=80, method=6)
     for _k in DESIGN_HEADERS:
         _d = Image.open(SRC / f"design-{_k}.jpg").convert("RGB")
         _d.resize((1080, round(_d.height * 1080 / _d.width)), Image.LANCZOS).save(img_dir / "headers" / f"design-{_k}.webp", "WEBP", quality=82, method=6)
