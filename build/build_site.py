@@ -501,16 +501,16 @@ def metric_block(key, root_count=True):
 
 
 
-# Markets map (supplied illustration). Marker centres measured in source pixels (1774 x 887).
+# Markets map (supplied illustration, place names removed). Marker centres measured in source pixels (1774 x 887).
 MM_W, MM_H = 1774, 887
-MM_BASE = (765, 362)  # Dubai
+MM_BASE = (886, 362)  # Dubai
 MM_ROUTES = [  # name, x, y, arc lift (pixels above the chord; negative = below), pulse delay (s)
-    ("Europe (region)", 435, 160, 120, 0.0),
-    ("China", 1230, 262, 150, 0.6),
-    ("India", 961, 411, 70, 1.2),
-    ("Vietnam", 1244, 476, 150, 1.8),
-    ("Malaysia", 1117, 540, 110, 2.4),
-    ("Indonesia", 1242, 603, -20, 3.0),
+    ("Europe", 644, 217, 120, 0.0),
+    ("China", 1261, 288, 150, 0.6),
+    ("India", 1048, 407, 70, 1.2),
+    ("Vietnam", 1284, 443, 130, 1.8),
+    ("Malaysia", 1204, 498, 90, 2.4),
+    ("Indonesia", 1314, 566, -70, 3.0),
 ]
 
 
@@ -527,7 +527,7 @@ def market_map_html(root):
     pulses.append(f'<circle class="mm-pulse mm-pulse--base" cx="{bx}" cy="{by}" r="8" style="animation-delay:0s"/>')
     return f"""<figure class="market-map" style="margin:0">
   <div class="market-map__frame">
-    <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold arcs to India, China, Malaysia, Vietnam, Indonesia and Europe (region)." width="{MM_W}" height="{MM_H}">
+    <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
     <svg class="market-map__svg" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">
       {''.join(tracks)}
       {''.join(flows)}
@@ -550,10 +550,6 @@ def home_page():
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>
     <h1>{esc(COMPANY['tagline'])}</h1>
     <p class="lead">Connecting fertilizer products with international markets through a focused approach to global trading and commercial relationships.</p>
-    <div class="hero-actions">
-      <a class="btn btn--gold" href="products/">Explore Our Products</a>
-      <a class="btn btn--outline" href="contact/">Contact Our Team</a>
-    </div>
   </div>
 </section>"""
 
@@ -620,7 +616,7 @@ def home_page():
     band = cta_band(r, "Discuss Your Fertilizer Requirements",
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
-    body = hero + scale + products + intro + markets + band
+    body = f"""<div class="hero-pin">{hero}</div>""" + products + intro + markets + band
     jsonld = [{
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -879,10 +875,7 @@ def markets_page():
 
     map_block = f"""<section class="section" style="padding-bottom:40px">
   <div class="container">
-    <figure class="figure" style="margin:0">
-      <img src="{r}assets/img/map.webp" alt="World map with highlighted markers across Asia and Europe" width="1920" height="1080">
-      <figcaption>Illustrative map. Markers indicate the company's reported destination markets. They do not show shipment routes, volumes or customer locations.</figcaption>
-    </figure>
+{market_map_html(r)}
   </div>
 </section>"""
 

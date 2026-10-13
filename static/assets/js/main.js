@@ -216,12 +216,14 @@
     var hero = doc.querySelector('.hero');
     var mq = window.matchMedia('(max-width: 760px)');
     if (!hero || reduceMotion || !hero.querySelector('picture')) return;
+    var pin = hero.parentNode;
     var ticking = false;
     function update() {
       ticking = false;
-      var p = window.scrollY / (window.innerHeight * 0.3);
+      var p = window.scrollY / (window.innerHeight * 0.9);
       p = Math.max(0, Math.min(1, p));
-      hero.style.setProperty('--p', p.toFixed(3));
+      var e = p * p * (3 - 2 * p); // ease in and out so the screen settles softly
+      hero.style.setProperty('--p', e.toFixed(3));
     }
     function onScroll() {
       if (!ticking) { ticking = true; window.requestAnimationFrame(update); }
@@ -229,10 +231,12 @@
     function apply() {
       if (mq.matches) {
         hero.classList.add('js-scroll-hero');
+        if (pin && pin.classList.contains('hero-pin')) pin.classList.add('hero-pin--on');
         update();
         window.addEventListener('scroll', onScroll, { passive: true });
       } else {
         hero.classList.remove('js-scroll-hero');
+        if (pin && pin.classList.contains('hero-pin')) pin.classList.remove('hero-pin--on');
         hero.style.removeProperty('--p');
         window.removeEventListener('scroll', onScroll);
       }

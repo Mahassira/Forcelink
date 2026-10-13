@@ -23,7 +23,7 @@ img{display:block;max-width:100%;height:auto}
 a{color:var(--blue)}
 p{margin:0 0 1em}
 ul,ol{margin:0;padding:0}
-main{display:block;overflow-x:hidden}
+main{display:block;overflow-x:hidden;overflow-x:clip}
 .grid>*{min-width:0}
 
 h1,h2,h3{color:var(--navy);line-height:1.15;margin:0 0 .5em;letter-spacing:-.015em}
@@ -350,10 +350,14 @@ h3{font-size:1.2rem;font-weight:600}
 
 .market-map__caption{font-size:.85rem;line-height:1.5}
 
-/* Home hero, phones with JS: the photo stays alone at first. On scroll, a navy screen rises over it
-   and carries the header text (--p runs 0 to 1). */
+/* Home hero, phones with JS: the hero is pinned for the first part of the scroll. The photo stays
+   alone, then the navy header card wipes down from the top edge over it (--p runs 0 to 1, eased). */
 @media (max-width:760px){
+  .hero-pin--on{height:190vh;height:190svh}
+  .js-scroll-hero picture{background:linear-gradient(180deg,#f1ece4 0%,#d9cfc1 100%)}
+  .js-scroll-hero picture img{mix-blend-mode:multiply}
+  .hero-pin--on .hero{position:sticky;top:0}
   .hero.js-scroll-hero{min-height:100vh;min-height:100svh;background:var(--navy)}
-  .js-scroll-hero .hero-content{position:absolute;inset:0;z-index:2;width:100%;max-width:none;margin:0;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;background:var(--navy);border-radius:0;box-shadow:none;transform:translateY(calc((1 - var(--p,0)) * 100%));will-change:transform}
-  .js-scroll-hero .hero-content > *{max-width:440px;margin-left:auto;margin-right:auto}
+  .js-scroll-hero .hero-content{position:absolute;inset:0;z-index:2;width:100%;max-width:none;margin:0;padding:24px 20px;display:flex;flex-direction:column;justify-content:center;background:var(--navy);border-radius:0;box-shadow:none;clip-path:inset(0 0 calc((1 - var(--p,0)) * 100%) 0)}
+  .js-scroll-hero .hero-content > *{max-width:440px;margin-left:auto;margin-right:auto;opacity:clamp(0,calc((var(--p,0) - .6) * 2.5),1)}
 }
