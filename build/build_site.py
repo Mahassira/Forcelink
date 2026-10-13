@@ -376,6 +376,14 @@ def soil_html(root, desk_key, mobile_file):
 DESIGN_HEADERS = ("about", "markets", "products", "contact")  # phone headers designed with their text baked in
 
 
+DESIGN_TEXT = {
+    "about": ("Fertilizer and raw material portfolio", "Six products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request."),
+    "products": ("Fertilizer and raw material portfolio", "Six main products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request."),
+    "markets": ("International market focus", "FORCE LINK reports destination markets across Asia and Europe. Our trading activity connects fertilizer supply with buyers in these regions."),
+    "contact": ("Discuss your requirements", "Contact our team to discuss your product requirements and potential trading opportunities."),
+}
+
+
 def page_header(key, root, path, trail, eyebrow, h1, lead):
     name = PAGE_BANNER[key]
     desk, mob, alt, desk_pos, mob_pos = HEADER_IMAGES[name]
@@ -384,16 +392,17 @@ def page_header(key, root, path, trail, eyebrow, h1, lead):
     if key in DESIGN_HEADERS:
         mobile_base = f"design-{key}"
         soil = soil_html(root, key, f"design-{key}-soil.webp")
+        h1, lead = DESIGN_TEXT[key]
         return f"""<section class="page-header page-header--design">
   <picture>
     <source media="(max-width: 760px)" srcset="{root}assets/img/headers/{mobile_base}.webp" type="image/webp">
-    <img class="page-header__img" src="{root}assets/img/headers/desk-{key}.webp" alt="{esc(alt)}" width="1600" height="1024" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
+    <img class="page-header__img" src="{root}assets/img/headers/desk-{key}.webp" alt="{esc(alt)}" width="1366" height="768" style="--pos-d:{desk_pos};--pos-m:{mob_pos}" fetchpriority="high">
   </picture>
   <div class="container page-header__content">
     {breadcrumbs(path, trail)}
     <p class="eyebrow">{esc(eyebrow)}</p>
     <h1>{esc(h1)}</h1>
-    <p class="lead">{lead}</p>
+    <p class="lead">{esc(lead)}</p>
   </div>
 </section>
 {soil}
@@ -580,11 +589,12 @@ def home_page():
     hero = f"""<section class="hero hero--image">
   <picture>
     <source media="(max-width: 760px)" srcset="{r}assets/img/headers/home-mobile.webp" type="image/webp">
-    <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1600" height="1024" fetchpriority="high">
+    <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1366" height="768" fetchpriority="high">
   </picture>
   <div class="container hero-content">
     <p class="eyebrow">Dubai, United Arab Emirates · Established {COMPANY['founded']}</p>
-    <h1>{esc(COMPANY['tagline'])}</h1>
+    <h1>FORCE LINK - FLT General Trading LLC</h1>
+    <p class="hero-sub">Connecting Global Fertilizer Markets</p>
     <p class="lead">Connecting fertilizer products with international markets through a focused approach to global trading and commercial relationships.</p>
   </div>
 </section>"""
