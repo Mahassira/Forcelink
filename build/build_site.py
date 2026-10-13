@@ -521,29 +521,34 @@ def metric_block(key, root_count=True):
 
 
 
-# Markets map (supplied illustration, place names removed). Marker centres measured in source pixels (1774 x 887).
-MM_W, MM_H = 1774, 887
-MM_BASE = (886, 362)  # Dubai
-MM_ROUTES = [  # name, x, y, arc lift (pixels above the chord; negative = below), pulse delay (s)
-    ("Europe", 644, 217, 120, 0.0),
-    ("China", 1261, 288, 150, 0.6),
-    ("India", 1048, 407, 70, 1.2),
-    ("Vietnam", 1284, 443, 130, 1.8),
-    ("Malaysia", 1204, 498, 90, 2.4),
-    ("Indonesia", 1314, 566, -70, 3.0),
+# Markets map (supplied illustration, names removed). Marker centres measured in source pixels (1200 x 1200).
+MM_DESK = (20, 300, 1180, 880)    # desktop crop around the map's content
+MM_CROP = (540, 380, 1030, 700)   # phone crop around Dubai and its markets
+MM_W, MM_H = MM_DESK[2] - MM_DESK[0], MM_DESK[3] - MM_DESK[1]
+MM_BASE = (743, 542)  # Dubai
+MM_TRACE = {
+    "Europe": [[717, 537], [673, 537], [660, 533], [648, 527], [624, 502], [616, 490], [611, 479], [606, 474]],
+    "China": [[769, 516], [772, 516], [782, 506], [786, 506], [796, 499], [814, 490], [828, 485], [848, 481], [888, 481], [908, 487], [927, 496], [946, 508], [952, 514]],
+    "India": [[769, 537], [801, 537], [822, 546], [831, 555]],
+    "Vietnam": [[769, 568], [789, 584], [802, 592], [821, 600], [839, 604], [847, 604], [848, 605], [877, 605], [889, 602], [913, 593], [923, 585]],
+    "Malaysia": [[747, 568], [747, 576], [752, 587], [772, 607], [782, 614], [794, 620], [816, 627], [831, 630], [838, 630], [839, 631], [849, 631], [850, 632], [914, 632], [915, 631], [923, 631], [924, 630], [944, 628], [970, 623]],
+    "Indonesia": [[736, 568], [736, 579], [733, 582], [733, 595], [731, 605], [731, 640], [736, 654], [753, 671], [759, 675], [774, 681], [790, 684], [835, 684], [882, 674], [915, 664], [917, 662]],
+}
+MM_ROUTES = [  # name, marker x, marker y, pulse delay (s); each route is traced from the logo along the artwork's navy curve
+    ("Europe", 600, 455, 0.0),
+    ("China", 970, 522, 0.6),
+    ("India", 844, 570, 1.2),
+    ("Vietnam", 936, 570, 1.8),
+    ("Malaysia", 989, 619, 2.4),
+    ("Indonesia", 936, 656, 3.0),
 ]
-
-
-MM_CROP = (560, 140, 1400, 630)  # phone crop around Dubai and its markets (source pixels)
 
 
 def market_map_html(root):
     bx, by = MM_BASE
     tracks, flows, pulses = [], [], []
-    for name, x, y, lift, delay in MM_ROUTES:
-        mx, my = (bx + x) / 2, (by + y) / 2
-        cx, cy = mx, my - lift
-        d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {x},{y}"
+    for name, x, y, delay in MM_ROUTES:
+        d = "M" + " L".join(f"{px},{py}" for px, py in MM_TRACE[name])
         tracks.append(f'<path class="mm-track" d="{d}"/>')
         flows.append(f'<path class="mm-flow" d="{d}" style="animation-delay:{delay}s"/>')
         pulses.append(f'<circle class="mm-pulse" cx="{x}" cy="{y}" r="8" style="animation-delay:{delay}s"/>')
@@ -551,12 +556,12 @@ def market_map_html(root):
     inner = ''.join(tracks) + ''.join(flows) + ''.join(pulses)
     x0, y0, x1, y1 = MM_CROP
     return f"""<figure class="market-map" style="margin:0">
-  <div class="market-map__frame">
+  <div class="market-map__frame" style="--mm-ar:{MM_W}/{MM_H}">
     <picture>
       <source media="(max-width: 760px)" srcset="{root}assets/img/markets-map-mobile.webp" type="image/webp">
       <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
     </picture>
-    <svg class="market-map__svg market-map__svg--d" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
+    <svg class="market-map__svg market-map__svg--d" viewBox="{MM_DESK[0]} {MM_DESK[1]} {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
     <svg class="market-map__svg market-map__svg--m" viewBox="{x0} {y0} {x1 - x0} {y1 - y0}" aria-hidden="true" focusable="false">{inner}</svg>
   </div>
   <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
@@ -1109,9 +1114,9 @@ def optimise_images():
     _soil.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / "home-soil.webp", "WEBP", quality=82, method=6)
     save_webp("home-mobile.jpg", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
-    save_webp("markets-map.png", img_dir / "markets-map.webp", width=1774, quality=86)
-    _mm = Image.open(SRC / "markets-map.png").convert("RGB")
-    _mm.crop(MM_CROP).save(img_dir / "markets-map-mobile.webp", "WEBP", quality=86, method=6)
+    _mm_full = Image.open(SRC / "markets-map.png").convert("RGB")
+    _mm_full.crop(MM_DESK).save(img_dir / "markets-map.webp", "WEBP", quality=86, method=6)
+    _mm_full.crop(MM_CROP).save(img_dir / "markets-map-mobile.webp", "WEBP", quality=86, method=6)
 
     save_webp("about-plant.jpg", img_dir / "about-plant.webp", width=1000, quality=84)
 
