@@ -378,13 +378,13 @@ h3{font-size:1.2rem;font-weight:600}
 /* Desktop: the designed header image shows whole, its text is read by screen readers only,
    and the soil band continues to the first card (same treatment as the phone header). */
 @media (min-width:761px){
-  .hero--image{min-height:0;height:auto;aspect-ratio:2400/1536}
+  .hero--image{min-height:0;height:auto;aspect-ratio:16/9}
   .hero--image picture{position:absolute;inset:0;display:block}
 }
 .hero--image::after{display:none}
 .hero--image .hero-content{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 @media (min-width:761px){
-  .page-header--design{display:block;min-height:0;height:auto;aspect-ratio:2400/1536}
+  .page-header--design{display:block;min-height:0;height:auto;aspect-ratio:16/9}
   .page-header--design picture{position:absolute;inset:0;display:block}
 }
 .page-header--design::after,.page-header--design::before{display:none}
