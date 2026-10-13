@@ -1112,7 +1112,7 @@ def optimise_images():
     save_webp("HeroMobile.png", img_dir / "hero-mobile.webp", width=1080, quality=78)
     (img_dir / "headers").mkdir(parents=True, exist_ok=True)
     for _k in ("home", "about", "products", "markets", "contact"):
-        _w = Image.open(SRC / f"desk-{_k}.png").convert("RGB")
+        _w = Image.open(SRC / f"desk-{_k}.webp").convert("RGB")
         _w = _w.resize((2400, round(_w.height * 2400 / _w.width)), Image.LANCZOS)
         _w.save(img_dir / "headers" / f"desk-{_k}.webp", "WEBP", quality=80, method=6)
         _ws = _w.crop((0, _w.height - 320, _w.width, _w.height))
