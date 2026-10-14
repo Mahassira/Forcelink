@@ -210,4 +210,101 @@
     });
   }
 
+  /* Career application form. Same approach as the inquiry form: nothing is sent
+     by the website. The visitor's email app opens with the details filled in,
+     addressed to the company, and the visitor attaches the CV and sends it. */
+  var career = doc.getElementById('career-form');
+  if (career) {
+    var cStatus = doc.getElementById('career-status');
+    var cWrap = doc.getElementById('career-summary-wrap');
+    var cSummary = doc.getElementById('career-summary');
+    var cBtn = career.querySelector('button[type="submit"]');
+
+    var cValid = function (input) {
+      if (input.type === 'email') {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
+      }
+      return input.value.trim() !== '';
+    };
+
+    var cSet = function (message, isError) {
+      cStatus.textContent = message;
+      cStatus.classList.toggle('is-error', !!isError);
+      cStatus.classList.add('is-visible');
+    };
+
+    career.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var first = null;
+      var req = career.querySelectorAll('[required]');
+      for (var i = 0; i < req.length; i++) {
+        var ok = cValid(req[i]);
+        req[i].closest('.field').classList.toggle('is-invalid', !ok);
+        req[i].setAttribute('aria-invalid', String(!ok));
+        if (!ok && !first) first = req[i];
+      }
+      if (first) {
+        first.focus();
+        cSet('Please correct the highlighted fields before continuing.', true);
+        return;
+      }
+
+      var f = career.elements;
+      var position = f.position.value.trim() || 'General application';
+      var name = f.fullName.value.trim();
+      var lines = [
+        'Job application — FORCE LINK GENERAL TRADING LLC website',
+        '',
+        'Full name: ' + name,
+        'Email: ' + f.email.value.trim(),
+        'Telephone: ' + (f.phone.value.trim() || 'Not provided'),
+        'Preferred location: ' + f.preferredLocation.value,
+        'Position of interest: ' + position,
+        '',
+        'Cover note:',
+        f.message.value.trim(),
+        '',
+        'Please attach your CV (PDF) to this email before sending it.'
+      ];
+      var text = lines.join('\n');
+      var subject = 'Job application: ' + position + ' — ' + name;
+
+      if (cBtn) cBtn.disabled = true;
+
+      var openMailApp = function () {
+        window.location.href = 'mailto:' + EMAIL + '?subject=' + encodeURIComponent(subject);
+      };
+
+      var finish = function (copied) {
+        if (copied) {
+          cSet('Your application details have been copied to your clipboard and your email app is opening. Paste the details into the email, attach your CV, and send it. Nothing has been sent from this website yet.');
+          if (cWrap) cWrap.hidden = true;
+        } else {
+          cSummary.value = text;
+          if (cWrap) cWrap.hidden = false;
+          cSet('Your email app is opening. We could not copy the details automatically, so please copy them from the box below, attach your CV, and send the email. Nothing has been sent from this website yet. If no email app opens, write to ' + EMAIL + ' directly.');
+        }
+        openMailApp();
+        window.setTimeout(function () { if (cBtn) cBtn.disabled = false; }, 4000);
+      };
+
+      cSummary.value = text;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { finish(true); }, function () { finish(false); });
+      } else {
+        finish(false);
+      }
+    });
+
+    career.addEventListener('input', function (e) {
+      var input = e.target;
+      if (!input.closest) return;
+      var wrap = input.closest('.field');
+      if (wrap && wrap.classList.contains('is-invalid') && cValid(input)) {
+        wrap.classList.remove('is-invalid');
+        input.setAttribute('aria-invalid', 'false');
+      }
+    });
+  }
+
 })();
