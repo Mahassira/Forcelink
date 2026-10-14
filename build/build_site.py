@@ -262,7 +262,7 @@ def header_html(root, current):
 <header class="site-header">
   <div class="container header-inner">
     <a class="brand" href="{root}" aria-label="{esc(COMPANY['name'])} — home">
-      <img src="{root}assets/img/forcelink-logo.svg" alt="{esc(COMPANY['name'])}" width="300" height="39">
+      <img src="{root}assets/img/forcelink-logo.png" alt="{esc(COMPANY['name'])}" width="300" height="36">
     </a>
     <nav class="nav" aria-label="Primary">
       <ul>
@@ -1153,7 +1153,7 @@ def optimise_images():
 
     # Footer logo: supplied reversed (white) wordmark for dark backgrounds, cropped to its visible bounds. Not recoloured or redrawn.
     global EMBLEM_SIZE
-    emblem = Image.open(SRC / "footer-logo-reversed.png").convert("RGBA")
+    emblem = Image.open(SRC / "logo-white.png").convert("RGBA")
     alpha_box = emblem.getchannel("A").getbbox()
     if alpha_box:
         pad = 4
@@ -1162,6 +1162,12 @@ def optimise_images():
     emblem.save(img_dir / "forcelink-footer-logo.png", "PNG", optimize=True)
     display_w = 250
     EMBLEM_SIZE = (display_w, round(emblem.height * display_w / emblem.width))
+    # Header wordmark: navy logo for light backgrounds, cropped to its visible bounds.
+    _hl = Image.open(SRC / "logo-navy.png").convert("RGBA")
+    _hb = _hl.getchannel("A").getbbox()
+    _hl = _hl.crop((max(0, _hb[0] - 4), max(0, _hb[1] - 4), min(_hl.width, _hb[2] + 4), min(_hl.height, _hb[3] + 4)))
+    _hl = _hl.resize((900, round(_hl.height * 900 / _hl.width)), Image.LANCZOS)
+    _hl.save(img_dir / "forcelink-logo.png", "PNG", optimize=True)
 
     # Social sharing image (1200x630), centred crop of the hero.
     hero = Image.open(SRC / "HeroDesktop.png").convert("RGB")
