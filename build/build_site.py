@@ -1122,7 +1122,7 @@ def optimise_images():
     for _k in ("home", "about", "products", "markets", "contact"):
         _w = Image.open(SRC / f"desk-{_k}.webp").convert("RGB")
         _w.save(img_dir / "headers" / f"desk-{_k}.webp", "WEBP", quality=82, method=6)
-        _ws = _w.crop((0, _w.height - 320, _w.width, _w.height))
+        _ws = _w.crop((0, _w.height - 120, _w.width, _w.height))
         _ws.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"desk-{_k}-soil.webp", "WEBP", quality=80, method=6)
     for _k in DESIGN_HEADERS:
         _d = Image.open(SRC / f"design-{_k}.jpg").convert("RGB")
