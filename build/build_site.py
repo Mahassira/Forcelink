@@ -11,7 +11,6 @@ Usage:
 Requires: Pillow
 """
 
-import datetime
 import html
 import json
 import os
@@ -19,7 +18,7 @@ import re
 import shutil
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "source-assets"
@@ -36,43 +35,31 @@ if SITE_URL and not SITE_URL.endswith("/"):
 COMPANY = {
     "name": "FORCE LINK GENERAL TRADING LLC",
     "email": "info@forcelink-ae.com",
-    "phone_display": "+971 50 944 1192",   # Dubai Branch
+    "phone_display": "+971 50 944 1192",
     "phone_tel": "+971509441192",
-    "location": "Cairo, Egypt and Dubai, United Arab Emirates",
     "tagline": "Connecting Global Fertilizer Markets",
     "description": (
-        "FORCE LINK GENERAL TRADING LLC is an Egyptian international trading company with branches "
-        "in Cairo, Egypt and Dubai, United Arab Emirates, focused on fertilizers and related raw materials."
+        "FORCE LINK GENERAL TRADING LLC is an Egyptian international trading company with branches in "
+        "Cairo, Egypt and Dubai, United Arab Emirates, focused on fertilizers and related raw materials."
     ),
 }
 
-# Branch offices: the single source for every address and telephone shown on the site.
+# Branch offices: shown in the footer, on the contact page and in structured data.
 BRANCHES = [
-    {"name": "Dubai Branch",
-     "lines": ["Office No. 2004, Court Tower, Business Bay", "Dubai, United Arab Emirates"],
-     "phone_display": "+971 50 944 1192", "phone_tel": "+971509441192"},
-    {"name": "Cairo Branch",
-     "lines": ["Office 2, 1st Floor, ENAWALKS Mall", "5th Settlement, New Cairo, Egypt 11865"]},
+    {"label": "Dubai branch", "city": "Dubai", "country": "AE",
+     "address": "Court Tower, Office No. 2004, Business Bay, Dubai, United Arab Emirates"},
+    {"label": "Cairo branch", "city": "Cairo", "country": "EG",
+     "address": "Office 2, 1st floor, ENAWALKS Mall, 5th Settlement, New Cairo, Egypt, 11865"},
 ]
 
-MAILTO_APPLY = ("mailto:info@forcelink-ae.com?subject=Career%20Application%20-%20FORCE%20LINK"
-                "&body=Dear%20FORCE%20LINK%20Team%2C%0D%0A%0D%0AI%20would%20like%20to%20apply%20for%20a%20career%20"
-                "opportunity%20with%20FORCE%20LINK.%0D%0A%0D%0AFull%20Name%3A%0D%0APosition%20of%20Interest%3A%0D%0A"
-                "Preferred%20Location%20(Cairo%20or%20Dubai)%3A%0D%0ABrief%20Introduction%3A%0D%0A%0D%0AI%20will%20"
-                "attach%20my%20CV%20to%20this%20email.%0D%0A%0D%0AKind%20regards")
+def branch_items_html():
+    return "".join(f'<li><strong>{esc_(b["label"])}:</strong> {esc_(b["address"])}</li>' for b in BRANCHES)
 
-def branch_address(b):
-    lines = "<br>".join(esc(x) for x in b["lines"])
-    tel = ""
-    if b.get("phone_tel"):
-        tel = f'<p class="branch__tel">Tel: <a href="tel:{b["phone_tel"]}">{esc(b["phone_display"])}</a></p>'
-    return (f'<address class="branch"><h3 class="branch__name">{esc(b["name"])}</h3>'
-            f'<p class="branch__addr">{lines}</p>{tel}</address>')
+def branch_rows_html():
+    return "".join(f'<div><dt>{esc_(b["label"])}</dt><dd>{esc_(b["address"])}</dd></div>' for b in BRANCHES)
 
-
-def branches_block():
-    return '<div class="branches">\n' + "\n".join(branch_address(b) for b in BRANCHES) + "\n</div>"
-
+def esc_(v):
+    return html.escape(str(v), quote=True)
 
 SALES = {
     "y2025": {"value": "1.5", "decimals": "1", "label": "Metric tons sold",
@@ -93,7 +80,7 @@ MARKETS = [
 
 EMBLEM_SIZE = (250, 29)  # display size of the footer logo; set by optimise_images()
 
-GLOBE_LEGEND_MARKETS = ["India", "China", "Malaysia", "Vietnam", "Indonesia", "Europe (region)"]
+GLOBE_LEGEND_MARKETS = ["India", "China", "Malaysia", "Vietnam", "Indonesia", "Brazil", "Europe (region)"]
 
 PRODUCTS = [
     {
@@ -102,7 +89,7 @@ PRODUCTS = [
         "title_short": "Phosphate Rock",
         "tag": "Raw material",
         "source": "Phosphate_Rock.png",
-        "alt": "Lump of brown-grey phosphate rock on a transparent background",
+        "alt": "Sandy-tan phosphate rock powder piled on a white background",
         "short": "The mined mineral that is the primary raw material for most phosphate fertilizers.",
         "lead": "A naturally occurring, mined mineral and the primary feedstock for phosphate fertilizer production.",
         "overview": [
@@ -261,7 +248,6 @@ NAV = [
     ("About", "about/", "about"),
     ("Products", "products/", "products"),
     ("Markets", "markets/", "markets"),
-    ("Careers", "careers/", "careers"),
     ("Contact", "contact/", "contact"),
 ]
 
@@ -322,7 +308,6 @@ def footer_html(root):
     product_links = "\n".join(
         f'<li><a href="{root}products/{p["slug"]}/">{esc(p["name"])}</a></li>' for p in PRODUCTS
     )
-    year = datetime.date.today().year
     return f"""<footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
@@ -330,7 +315,7 @@ def footer_html(root):
         <div class="footer-brand">
           <img class="footer-logo" src="{root}assets/img/forcelink-footer-logo.png" alt="{esc(COMPANY['name'])}" width="{EMBLEM_SIZE[0]}" height="{EMBLEM_SIZE[1]}">
         </div>
-        <p class="footer-desc">International trading of fertilizers and related raw materials. An Egyptian company with branches in Cairo, Egypt and Dubai, United Arab Emirates.</p>
+        <p class="footer-desc">International trading of fertilizers and related raw materials, with branches in Cairo, Egypt and Dubai, United Arab Emirates.</p>
       </div>
       <nav aria-label="Footer: company">
         <h3>Company</h3>
@@ -338,7 +323,6 @@ def footer_html(root):
           <li><a href="{root}">Home</a></li>
           <li><a href="{root}about/">About</a></li>
           <li><a href="{root}markets/">Markets</a></li>
-          <li><a href="{root}careers/">Careers</a></li>
           <li><a href="{root}contact/">Contact</a></li>
         </ul>
       </nav>
@@ -351,16 +335,15 @@ def footer_html(root):
       </nav>
       <div>
         <h3>Contact</h3>
-        <ul class="footer-contact">
+        <ul>
           <li><a href="mailto:{COMPANY['email']}">{COMPANY['email']}</a></li>
-          <li>Dubai: <a href="tel:{COMPANY['phone_tel']}">{COMPANY['phone_display']}</a></li>
-          <li>Dubai Branch: Office No. 2004, Court Tower, Business Bay, Dubai, United Arab Emirates</li>
-          <li>Cairo Branch: Office 2, 1st Floor, ENAWALKS Mall, 5th Settlement, New Cairo, Egypt 11865</li>
+          <li><a href="tel:{COMPANY['phone_tel']}">{COMPANY['phone_display']}</a></li>
+{branch_items_html()}
         </ul>
       </div>
     </div>
     <div class="footer-bottom">
-      <span>© <span data-year>{year}</span> {esc(COMPANY['name'])}. All rights reserved.</span>
+      <span>© <span data-year>{2026}</span> {esc(COMPANY['name'])}. All rights reserved.</span>
       <span>Cairo, Egypt · Dubai, United Arab Emirates</span>
     </div>
   </div>
@@ -395,7 +378,6 @@ PAGE_BANNER = {
     "tsp": "seeding",
     "urea": "granules",
     "sulfur": "plant",
-    "careers": "seeding",
 }
 
 
@@ -410,12 +392,71 @@ def soil_html(root, desk_key, mobile_file):
 DESIGN_HEADERS = ("about", "markets", "products", "contact")  # phone headers designed with their text baked in
 
 
+HOME_LEAD = ("Connecting fertilizer products with international markets through a focused approach "
+             "to global trading and commercial relationships.")
+
 DESIGN_TEXT = {
-    "about": ("Connecting Markets Across Egypt and the UAE", "FORCE LINK is an Egyptian international trading company, with branches in Egypt and the United Arab Emirates, including Cairo and Dubai."),
+    "about": ("A focused international fertilizer trading business", "FORCE LINK GENERAL TRADING LLC is an international trading company with branches in Cairo, Egypt and Dubai, United Arab Emirates, focused on fertilizers and related raw materials."),
     "products": ("Fertilizer and raw material portfolio", "Six main products across phosphate, nitrogen and sulfur. Technical information, including specifications and documentation, is provided on request."),
-    "markets": ("Connecting Markets Across Asia, Europe and South America", "FORCE LINK's reported destination markets include India, China, Malaysia, Vietnam, Indonesia, Brazil and Europe. The company works with buyers and commercial partners across these markets through its international fertilizer trading activities."),
+    "markets": ("International market focus", "FORCE LINK reports destination markets across Asia, Europe and South America. Our trading activity connects fertilizer supply with buyers in these regions."),
     "contact": ("Discuss your requirements", "Contact our team to discuss your product requirements and potential trading opportunities."),
 }
+
+
+# Phone headers: the supplied photographs have no text, so the page text is set into a navy panel at the centre.
+FONT_DIR = ROOT / "build" / "fonts"
+
+
+def _wrap(text, font, width, draw):
+    lines, cur = [], ""
+    for word in text.split():
+        trial = f"{cur} {word}".strip()
+        if cur and draw.textlength(trial, font=font) > width:
+            lines.append(cur)
+            cur = word
+        else:
+            cur = trial
+    if cur:
+        lines.append(cur)
+    return lines
+
+
+def bake_mobile_header(src_name, title, lead, sub=None):
+    im = Image.open(SRC / src_name).convert("RGB")
+    W, H = im.size
+    draw = ImageDraw.Draw(im)
+    f_title = ImageFont.truetype(str(FONT_DIR / "Inter-SemiBold.otf"), 68)
+    f_sub = ImageFont.truetype(str(FONT_DIR / "Inter-SemiBold.otf"), 40)
+    f_lead = ImageFont.truetype(str(FONT_DIR / "Inter-Regular.otf"), 40)
+    box_w = round(W * 0.8)
+    pad = 56
+    inner = box_w - 2 * pad
+    t_lines = _wrap(title, f_title, inner, draw)
+    s_lines = _wrap(sub, f_sub, inner, draw) if sub else []
+    l_lines = _wrap(lead, f_lead, inner, draw)
+    lh_t, lh_s, lh_l = 84, 56, 58
+    height = (pad + 6 + 36 + len(t_lines) * lh_t
+              + (24 + len(s_lines) * lh_s if s_lines else 0)
+              + 24 + len(l_lines) * lh_l + pad)
+    x0, y0 = (W - box_w) // 2, (H - height) // 2
+    draw.rectangle((x0, y0, x0 + box_w, y0 + height), fill=(14, 48, 93))
+    gold, white, soft = (214, 167, 44), (255, 255, 255), (214, 222, 233)
+    y = y0 + pad
+    draw.rectangle((x0 + pad, y, x0 + pad + 96, y + 6), fill=gold)
+    y += 36
+    for ln in t_lines:
+        draw.text((x0 + pad, y), ln, font=f_title, fill=white)
+        y += lh_t
+    if s_lines:
+        y += 24
+        for ln in s_lines:
+            draw.text((x0 + pad, y), ln, font=f_sub, fill=gold)
+            y += lh_s
+    y += 24
+    for ln in l_lines:
+        draw.text((x0 + pad, y), ln, font=f_lead, fill=soft)
+        y += lh_l
+    return im
 
 
 def page_header(key, root, path, trail, eyebrow, h1, lead):
@@ -572,48 +613,45 @@ def metric_block(key, root_count=True):
 
 
 
-# Markets map (supplied illustration, names removed). Marker centres measured in source pixels (1200 x 1200).
-MM_DESK = (20, 300, 1180, 880)    # desktop crop around the map's content
-MM_CROP = (540, 380, 1030, 700)   # phone crop around Dubai and its markets
-MM_W, MM_H = MM_DESK[2] - MM_DESK[0], MM_DESK[3] - MM_DESK[1]
-MM_BASE = (743, 542)  # Dubai
-MM_TRACE = {
-    "Europe": [[717, 537], [673, 537], [660, 533], [648, 527], [624, 502], [616, 490], [611, 479], [606, 474]],
-    "China": [[769, 516], [772, 516], [782, 506], [786, 506], [796, 499], [814, 490], [828, 485], [848, 481], [888, 481], [908, 487], [927, 496], [946, 508], [952, 514]],
-    "India": [[769, 537], [801, 537], [822, 546], [831, 555]],
-    "Vietnam": [[769, 568], [789, 584], [802, 592], [821, 600], [839, 604], [847, 604], [848, 605], [877, 605], [889, 602], [913, 593], [923, 585]],
-    "Malaysia": [[747, 568], [747, 576], [752, 587], [772, 607], [782, 614], [794, 620], [816, 627], [831, 630], [838, 630], [839, 631], [849, 631], [850, 632], [914, 632], [915, 631], [923, 631], [924, 630], [944, 628], [970, 623]],
-    "Indonesia": [[736, 568], [736, 579], [733, 582], [733, 595], [731, 605], [731, 640], [736, 654], [753, 671], [759, 675], [774, 681], [790, 684], [835, 684], [882, 674], [915, 664], [917, 662]],
-}
-MM_ROUTES = [  # name, marker x, marker y, pulse delay (s); each route is traced from the logo along the artwork's navy curve
-    ("Europe", 600, 455, 0.0),
-    ("China", 970, 522, 0.6),
-    ("India", 844, 570, 1.2),
-    ("Vietnam", 936, 570, 1.8),
-    ("Malaysia", 989, 619, 2.4),
-    ("Indonesia", 936, 656, 3.0),
+# Markets map: supplied illustration, 1000 x 1000. Marker centres are in the image's pixel coordinates.
+MM_W, MM_H = 1000, 1000
+MM_BASE = (616, 450)   # FLT Dubai (centre of the box)
+MM_CAIRO = (534, 449)  # FLT Cairo (centre of the box)
+MM_ROUTES = [  # name, marker x, marker y, pulse delay (s); each route runs from the Dubai box to its market
+    ("Europe", 500, 379, 0.0),
+    ("China", 809, 435, 0.6),
+    ("India", 704, 475, 1.2),
+    ("Vietnam", 780, 475, 1.8),
+    ("Malaysia", 824, 515, 2.4),
+    ("Indonesia", 780, 547, 3.0),
+    ("Brazil", 332, 568, 3.6),
 ]
 
 
 def market_map_html(root):
     bx, by = MM_BASE
+    cx, cy = MM_CAIRO
     tracks, flows, pulses = [], [], []
     for name, x, y, delay in MM_ROUTES:
-        d = "M" + " L".join(f"{px},{py}" for px, py in MM_TRACE[name])
+        d = f"M{bx},{by} L{x},{y}"
         tracks.append(f'<path class="mm-track" d="{d}"/>')
         flows.append(f'<path class="mm-flow" d="{d}" style="animation-delay:{delay}s"/>')
         pulses.append(f'<circle class="mm-pulse" cx="{x}" cy="{y}" r="8" style="animation-delay:{delay}s"/>')
+    # Gold connector between the Cairo and Dubai boxes
+    link = f"M{cx + 13},{cy} L{bx - 13},{by}"
+    tracks.append(f'<path class="mm-track" d="{link}"/>')
+    flows.append(f'<path class="mm-flow" d="{link}" style="animation-delay:0s"/>')
     pulses.append(f'<circle class="mm-pulse mm-pulse--base" cx="{bx}" cy="{by}" r="8" style="animation-delay:0s"/>')
+    pulses.append(f'<circle class="mm-pulse mm-pulse--base" cx="{cx}" cy="{cy}" r="8" style="animation-delay:1.5s"/>')
     inner = ''.join(tracks) + ''.join(flows) + ''.join(pulses)
-    x0, y0, x1, y1 = MM_CROP
     return f"""<figure class="market-map" style="margin:0">
   <div class="market-map__frame" style="--mm-ar:{MM_W}/{MM_H}">
     <picture>
-      <img src="{root}assets/img/markets-map.webp" alt="Night-time world map centred on Dubai, United Arab Emirates, with illustrative gold routes to markets in Europe, China, India, Vietnam, Malaysia and Indonesia." width="{MM_W}" height="{MM_H}">
+      <img src="{root}assets/img/markets-map.webp" alt="World map showing FORCE LINK’s offices in Cairo and Dubai, with illustrative gold routes to reported destination markets in Europe, China, India, Vietnam, Malaysia, Indonesia and Brazil." width="{MM_W}" height="{MM_H}">
     </picture>
-    <svg class="market-map__svg market-map__svg--d" viewBox="{MM_DESK[0]} {MM_DESK[1]} {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
+    <svg class="market-map__svg market-map__svg--d" viewBox="0 0 {MM_W} {MM_H}" aria-hidden="true" focusable="false">{inner}</svg>
   </div>
-  <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK's reported destination markets. The connecting lines are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
+  <figcaption class="note market-map__caption">An illustrative visualization of FORCE LINK’s connections to its reported destination markets. The arcs are schematic and do not represent actual vessel routes or live shipment tracking.</figcaption>
 </figure>
 """
 
@@ -626,13 +664,10 @@ def home_page():
     <img class="hero-img" src="{r}assets/img/headers/desk-home.webp" alt="FORCE LINK General Trading. Connecting global fertilizer markets. A hand sowing granules onto soil." width="1920" height="1080" fetchpriority="high">
   </picture>
   <div class="container hero-content">
-    <p class="eyebrow">FORCE LINK General Trading LLC</p>
-    <h1>Connecting Global Fertilizer Markets</h1>
-    <p class="lead">Connecting fertilizer products with international markets through a focused approach to global trading and commercial relationships.</p>
-    <div class="hero-actions">
-      <a class="btn btn--gold" href="products/">Explore Our Products</a>
-      <a class="btn btn--line" href="contact/">Contact Our Team</a>
-    </div>
+    <p class="eyebrow">Cairo, Egypt · Dubai, United Arab Emirates</p>
+    <h1>{esc(COMPANY['name'])}</h1>
+    <p class="hero-sub">{esc(COMPANY['tagline'])}</p>
+    <p class="lead">{esc(HOME_LEAD)}</p>
   </div>
 </section>"""
 
@@ -680,16 +715,16 @@ def home_page():
   </div>
 </section>"""
 
-    value_cards = """<section class="section" aria-label="Our value and vision">
-  <div class="container grid grid-2 value-cards">
-    <article class="value-card">
+    values = f"""<section class="section" aria-label="Our value and vision">
+  <div class="container grid grid-2 vision-grid">
+    <div class="vision-box">
       <h2>Our Value</h2>
       <p>We connect buyers with suitable products and sourcing opportunities through clear communication and tailored commercial solutions.</p>
-    </article>
-    <article class="value-card">
+    </div>
+    <div class="vision-box">
       <h2>Our Vision</h2>
       <p>To build trusted, long-term partnerships and strengthen our presence in global fertilizer markets.</p>
-    </article>
+    </div>
   </div>
 </section>"""
 
@@ -713,7 +748,7 @@ def home_page():
                     "Contact our team to discuss your product requirements and potential trading opportunities.")
 
     soil = soil_html("./", "home", "home-soil.webp")
-    body = hero + soil + products + intro + value_cards + markets + band
+    body = hero + soil + products + intro + values + markets + band
     jsonld = [{
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -722,17 +757,16 @@ def home_page():
         "email": COMPANY["email"],
         "telephone": COMPANY["phone_display"],
         "address": [
-            {"@type": "PostalAddress", "streetAddress": "Office No. 2004, Court Tower, Business Bay",
-             "addressLocality": "Dubai", "addressCountry": "AE", "name": "Dubai Branch"},
-            {"@type": "PostalAddress", "streetAddress": "Office 2, 1st Floor, ENAWALKS Mall, 5th Settlement",
-             "addressLocality": "New Cairo", "postalCode": "11865", "addressCountry": "EG", "name": "Cairo Branch"},
+            {"@type": "PostalAddress", "streetAddress": b["address"],
+             "addressLocality": b["city"], "addressCountry": b["country"]}
+            for b in BRANCHES
         ],
         **({"url": SITE_URL} if SITE_URL else {}),
     }]
     return page(
         "",
-        "FORCE LINK GENERAL TRADING LLC | Fertilizer Trading, Egypt and UAE",
-        "Egyptian international trading company with branches in Cairo and Dubai. Fertilizers and related raw materials, including Phosphate Rock, DAP, SSP, TSP, Urea and Sulfur, for markets across Asia, Europe and South America.",
+        "FORCE LINK GENERAL TRADING LLC | Fertilizer Trading, Cairo and Dubai",
+        "International trading of fertilizers and related raw materials from Cairo, Egypt and Dubai, UAE. Phosphate Rock, DAP, SSP, TSP, Urea and Sulfur for markets across Asia, Europe and South America.",
         body,
         current="home",
         jsonld=jsonld,
@@ -744,35 +778,19 @@ def about_page():
     path = "about/"
     r = root_for(path)
     trail = [("Home", ""), ("About", "about/")]
-    hero = page_header("about", r, path, trail, "About FORCE LINK",
-                       "Connecting Markets Across Egypt and the UAE",
-                       "FORCE LINK is an Egyptian international trading company, with branches in Egypt and the United Arab Emirates, including Cairo and Dubai.")
+    hero = page_header("about", r, path, trail, "About us",
+                       "A focused international fertilizer trading business",
+                       f"{esc(COMPANY['name'])} is an Egyptian international trading company with branches in Cairo and Dubai. The company focuses on the international trading of fertilizers and related raw materials.")
 
     story = f"""<section class="section">
   <div class="container">
     <div class="prose">
-      <p class="eyebrow">About FORCE LINK</p>
-      <h2>Connecting Markets Across Egypt and the UAE</h2>
-      <p>FORCE LINK is an Egyptian international trading company, with branches in Egypt and the United Arab Emirates, including Cairo and Dubai.</p>
-      <p>We specialize in the international trading of fertilizers and related raw materials, connecting suppliers with buyers across Asia and Europe. Our approach is built on clear product information, transparent commercial terms, and direct communication to support trading opportunities across our markets.</p>
-      <h3>Our Value</h3>
-      <p>We connect buyers with suitable products and sourcing opportunities through clear communication and tailored commercial solutions.</p>
-      <h3>Our Vision</h3>
-      <p>To build trusted, long-term partnerships and strengthen our presence in global fertilizer markets.</p>
+      <p class="eyebrow">Our positioning</p>
+      <h2>{esc(COMPANY['tagline'])}</h2>
+      <p>FORCE LINK positions itself as an international trading partner connecting fertilizer products with global markets. Our role is commercial: matching product requirements with supply, and keeping communication clear between buyers and partners.</p>
+      <p>Our product portfolio covers phosphate rock, DAP, SSP, TSP, urea and sulfur. Each product has its own information page, and we provide technical details on request.</p>
+      <p>We are a trading business. We do not describe ourselves as a manufacturer of every product in our portfolio.</p>
     </div>
-  </div>
-</section>"""
-
-    branch_section = f"""<section class="section section--off" aria-labelledby="branches-heading">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Our offices</p>
-        <h2 id="branches-heading">Cairo and Dubai</h2>
-      </div>
-    </div>
-    {branches_block()}
-    <p style="margin-top:24px"><a class="link-arrow" href="{r}contact/">Contact our team</a></p>
   </div>
 </section>"""
 
@@ -842,10 +860,10 @@ def about_page():
     band = cta_band(r, "Discuss your requirements with our team",
                     "Contact us to discuss product requirements, destination markets and potential trading opportunities.")
 
-    body = hero + story + branch_section + figures + portfolio + markets + values + band
+    body = hero + story + figures + portfolio + markets + values + band
     return page(
         path,
-        "About FORCE LINK GENERAL TRADING LLC | Egypt and UAE Fertilizer Trader",
+        "About FORCE LINK GENERAL TRADING LLC | Cairo and Dubai Fertilizer Trader",
         "About FORCE LINK GENERAL TRADING LLC: an Egyptian international trading company with branches in Cairo and Dubai, focused on fertilizers and related raw materials.",
         body,
         current="about",
@@ -985,7 +1003,7 @@ def markets_page():
     trail = [("Home", ""), ("Markets", "markets/")]
     hero = page_header("markets", r, path, trail, "Markets",
                        "International market focus",
-                       "FORCE LINK's reported destination markets include India, China, Malaysia, Vietnam, Indonesia, Brazil and Europe. The company works with buyers and commercial partners across these markets through its international fertilizer trading activities.")
+                       "FORCE LINK reports destination markets across Asia, Europe and South America. Our trading activity connects fertilizer supply with buyers in these regions.")
 
     map_block = f"""<section class="section" style="padding-bottom:40px">
   <div class="container">
@@ -1119,10 +1137,9 @@ def contact_page():
       <dl class="contact-facts">
         <div><dt>Company</dt><dd>{esc(COMPANY['name'])}</dd></div>
         <div><dt>Email</dt><dd><a href="mailto:{COMPANY['email']}">{COMPANY['email']}</a></dd></div>
-        <div><dt>Telephone (Dubai Branch)</dt><dd><a href="tel:{COMPANY['phone_tel']}">{COMPANY['phone_display']}</a></dd></div>
+        <div><dt>Telephone</dt><dd><a href="tel:{COMPANY['phone_tel']}">{COMPANY['phone_display']}</a></dd></div>
+        {branch_rows_html()}
       </dl>
-      <h2 style="margin-top:40px;font-size:1.5rem">Our branches</h2>
-      {branches_block()}
       <h2 style="margin-top:40px;font-size:1.5rem">Business inquiries</h2>
       <p>Include the product, destination market and any volume or timing requirements. The more detail you share, the more useful our response.</p>
       <div class="privacy" style="border-top:0;padding-top:0">
@@ -1141,7 +1158,7 @@ def contact_page():
     return page(
         path,
         "Contact FORCE LINK GENERAL TRADING LLC | Cairo and Dubai",
-        "Contact FORCE LINK GENERAL TRADING LLC with offices in Cairo, Egypt and Dubai, UAE. Email info@forcelink-ae.com or call +971 50 944 1192 (Dubai Branch) to discuss fertilizer product requirements.",
+        "Contact FORCE LINK GENERAL TRADING LLC, with offices in Cairo, Egypt and Dubai, UAE. Email info@forcelink-ae.com or call +971 50 944 1192 to discuss fertilizer product requirements.",
         body,
         current="contact",
         jsonld=[b for b in [breadcrumb_jsonld(trail)] if b],
@@ -1196,19 +1213,18 @@ def optimise_images():
         _ws = _w.crop((0, _w.height - 120, _w.width, _w.height))
         _ws.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"desk-{_k}-soil.webp", "WEBP", quality=80, method=6)
     for _k in DESIGN_HEADERS:
-        _d = Image.open(SRC / f"design-{_k}.jpg").convert("RGB")
+        _d = bake_mobile_header(f"design-{_k}.jpg", *DESIGN_TEXT[_k])
         _d.resize((1080, round(_d.height * 1080 / _d.width)), Image.LANCZOS).save(img_dir / "headers" / f"design-{_k}.webp", "WEBP", quality=82, method=6)
         _strip = _d.crop((0, _d.height - 420, _d.width, _d.height))
         _strip.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"design-{_k}-soil.webp", "WEBP", quality=82, method=6)
-    _home = Image.open(SRC / "home-mobile.jpg").convert("RGB")
+    _home = bake_mobile_header("home-mobile.jpg", "FORCE LINK General Trading LLC", HOME_LEAD, sub=COMPANY["tagline"])
     # Mirror the soil band so its top row equals the header image's bottom row (no visible seam).
     _soil = _home.crop((0, _home.height - 420, _home.width, _home.height))
     _soil.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / "home-soil.webp", "WEBP", quality=82, method=6)
-    save_webp("home-mobile.jpg", img_dir / "headers" / "home-mobile.webp", width=1080, quality=82)
+    _home.save(img_dir / "headers" / "home-mobile.webp", "WEBP", quality=82, method=6)
     save_webp("MapDesktop.png", img_dir / "map.webp", width=1920, quality=84)
     _mm_full = Image.open(SRC / "markets-map.png").convert("RGB")
-    _mm_full.crop(MM_DESK).save(img_dir / "markets-map.webp", "WEBP", quality=86, method=6)
-    _mm_full.crop(MM_CROP).save(img_dir / "markets-map-mobile.webp", "WEBP", quality=86, method=6)
+    _mm_full.save(img_dir / "markets-map.webp", "WEBP", quality=88, method=6)
 
     save_webp("about-plant.jpg", img_dir / "about-plant.webp", width=1000, quality=84)
 
@@ -1250,109 +1266,6 @@ def optimise_images():
     og.save(img_dir / "og-image.jpg", "JPEG", quality=82, optimize=True)
 
 
-def careers_page():
-    path = "careers/"
-    r = root_for(path)
-    trail = [("Home", ""), ("Careers", "careers/")]
-    hero = page_header("careers", r, path, trail, "Careers at FORCE LINK", "Join Our Team",
-                       "At FORCE LINK, our success is built on the people behind our business.")
-
-    grow = f"""<section class="section">
-  <div class="container split">
-    <div>
-      <p class="eyebrow">Careers at FORCE LINK</p>
-      <h2>Grow With FORCE LINK</h2>
-      <p class="careers-cta">
-        <a class="btn btn--gold" href="{esc(MAILTO_APPLY)}">Apply by Email</a>
-        <a class="btn btn--line" href="{r}about/">Explore Our Company</a>
-      </p>
-    </div>
-    <div class="prose">
-      <p>With more than 25 employees across our Cairo and Dubai offices, we bring together diverse skills and experience to support our international trading activities.</p>
-      <p>We value teamwork, professional growth, integrity, and a commitment to delivering results.</p>
-    </div>
-  </div>
-</section>"""
-
-    people = """<section class="section section--off" aria-labelledby="people-heading">
-  <div class="container split">
-    <div>
-      <p class="eyebrow">Our people</p>
-      <h2 id="people-heading">People Behind Every Opportunity</h2>
-    </div>
-    <div class="prose">
-      <p>Our team brings together different skills, experiences, and perspectives across Egypt and the United Arab Emirates.</p>
-      <p>We believe that clear communication, collaboration, and a shared commitment to results help us build strong professional relationships and support our business growth.</p>
-    </div>
-  </div>
-</section>"""
-
-    why = """<section class="section" aria-labelledby="why-heading">
-  <div class="container">
-    <div class="section-head">
-      <div>
-        <p class="eyebrow">Why join</p>
-        <h2 id="why-heading">Why Join FORCE LINK?</h2>
-      </div>
-    </div>
-    <div class="grid grid-3">
-      <div class="value"><h3>Teamwork</h3><p>Work with colleagues across our Cairo and Dubai offices in an international trading environment.</p></div>
-      <div class="value"><h3>Professional Growth</h3><p>Develop your skills, broaden your experience, and take on new professional challenges.</p></div>
-      <div class="value"><h3>International Exposure</h3><p>Gain exposure to international trading activities and commercial relationships across different markets.</p></div>
-    </div>
-  </div>
-</section>"""
-
-    opportunities = """<section class="section section--off" aria-labelledby="opportunities-heading">
-  <div class="container prose">
-    <p class="eyebrow">Current opportunities</p>
-    <h2 id="opportunities-heading">Explore Career Opportunities</h2>
-    <p>We welcome motivated professionals who are interested in contributing to our business.</p>
-    <div class="callout">
-      <p>We do not currently list specific vacancies on this page. You are welcome to send us your CV for consideration for suitable future opportunities.</p>
-    </div>
-  </div>
-</section>"""
-
-    general = f"""<section class="section" aria-labelledby="general-heading">
-  <div class="container split">
-    <div>
-      <p class="eyebrow">General applications</p>
-      <h2 id="general-heading">Don't See the Right Opportunity?</h2>
-      <p>We welcome applications from professionals who are interested in being part of FORCE LINK.</p>
-      <p>Send us your CV along with a brief introduction about your experience, the role you are interested in, and your preferred work location.</p>
-      <p>Our team will review your application and may contact you if a suitable opportunity becomes available.</p>
-    </div>
-    <div class="callout">
-      <p><strong>Application email:</strong> <a href="mailto:{COMPANY['email']}">{COMPANY['email']}</a></p>
-      <p><strong>Suggested email subject:</strong> Career Application – FORCE LINK</p>
-      <p>Your email application opens in your own email app. Please attach your CV manually before you send the message.</p>
-      <p style="margin-top:20px"><a class="btn btn--navy" href="{esc(MAILTO_APPLY)}">Apply by Email</a></p>
-    </div>
-  </div>
-</section>"""
-
-    final = f"""<section class="section section--off" aria-labelledby="next-heading">
-  <div class="container prose">
-    <p class="eyebrow">Apply</p>
-    <h2 id="next-heading">Take the Next Step</h2>
-    <p>Interested in joining our team? Introduce yourself and tell us how your experience could contribute to FORCE LINK.</p>
-    <p><a class="btn btn--gold" href="{esc(MAILTO_APPLY)}">Send Your Application</a></p>
-  </div>
-</section>"""
-
-    body = hero + grow + people + why + opportunities + general + final
-    return page(
-        path,
-        "Careers | Join FORCE LINK GENERAL TRADING LLC",
-        "Career opportunities at FORCE LINK GENERAL TRADING LLC across our Cairo, Egypt and Dubai, UAE offices. Send your CV by email for consideration.",
-        body,
-        current="careers",
-        jsonld=[b for b in [breadcrumb_jsonld(trail)] if b],
-        scripts=(),
-    )
-
-
 # ---------------------------------------------------------------------------
 # Build
 # ---------------------------------------------------------------------------
@@ -1381,7 +1294,6 @@ def main():
         write(f"products/{p['slug']}/index.html", product_page(p))
     write("markets/index.html", markets_page())
     write("contact/index.html", contact_page())
-    write("careers/index.html", careers_page())
 
     # GitHub Pages: serve files starting with underscores; no Jekyll processing.
     write(".nojekyll", "")
@@ -1392,7 +1304,7 @@ def main():
     write("robots.txt", robots)
 
     if SITE_URL:
-        paths = [""] + ["about/", "products/", "markets/", "careers/", "contact/"] + [
+        paths = [""] + ["about/", "products/", "markets/", "contact/"] + [
             f"products/{p['slug']}/" for p in PRODUCTS
         ]
         entries = "\n".join(f"  <url><loc>{SITE_URL}{p}</loc></url>" for p in paths)
