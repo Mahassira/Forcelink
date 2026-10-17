@@ -1340,7 +1340,7 @@ def optimise_images():
         _d.resize((1080, round(_d.height * 1080 / _d.width)), Image.LANCZOS).save(img_dir / "headers" / f"design-{_k}.webp", "WEBP", quality=82, method=6)
         _strip = _d.crop((0, _d.height - 420, _d.width, _d.height))
         _strip.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / f"design-{_k}-soil.webp", "WEBP", quality=82, method=6)
-    _home = Image.open(SRC / "home-mobile.jpg").convert("RGB")
+    _home = bake_mobile_header("home-mobile.jpg", "FORCE LINK General Trading LLC", HOME_LEAD, sub=COMPANY["tagline"])
     # Mirror the soil band so its top row equals the header image's bottom row (no visible seam).
     _soil = _home.crop((0, _home.height - 420, _home.width, _home.height))
     _soil.transpose(Image.FLIP_TOP_BOTTOM).save(img_dir / "headers" / "home-soil.webp", "WEBP", quality=82, method=6)

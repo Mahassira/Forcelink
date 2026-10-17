@@ -413,14 +413,3 @@ h3{font-size:1.2rem;font-weight:600}
 .vision-box h2{color:#fff;margin:0 0 16px}
 .vision-box p{color:#D6DEE9;margin:0;font-size:1.08rem;line-height:1.7}
 @media (max-width:760px){.vision-box{padding:36px 24px}}
-
-/* Home page, phone: plain photograph with the text set in navy boxes (square corners, blue glow with no spread) */
-@media (max-width: 760px){
-  .hero--image .hero-content{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);width:auto;height:auto;margin:0;padding:0 18px;overflow:visible;clip:auto;white-space:normal;border:0;max-width:none;display:block;background:none;box-shadow:none;border-radius:0}
-  .hero--image .hero-content h1,
-  .hero--image .hero-content .hero-sub,
-  .hero--image .hero-content .lead{display:block;width:auto;max-width:none;margin:0 0 6px;padding:12px 16px;background:#0E305D;color:#fff;border-radius:0;box-shadow:0 0 22px 0 rgba(26,74,138,.75);text-align:left;text-transform:none}
-  .hero--image .hero-content h1{font-size:30px;line-height:1.15;font-weight:800}
-  .hero--image .hero-content .hero-sub{font-size:18px;line-height:1.3;font-weight:700;color:#D6A72C}
-  .hero--image .hero-content .lead{font-size:16px;line-height:1.5;font-weight:500;color:#D6DEE9}
-}
