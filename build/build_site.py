@@ -35,10 +35,10 @@ if SITE_URL and not SITE_URL.endswith("/"):
 COMPANY = {
     "name": "FORCE LINK GENERAL TRADING LLC",
     "email": "info@forcelink-ae.com",
-    "phone_display": "+971 50 944 1192",
-    "phone_tel": "+971509441192",
-    "phone2_display": "+20 106 075 5683",
-    "phone2_tel": "+201060755683",
+    "phone_display": "+971 56 661 4040",
+    "phone_tel": "+971566614040",
+    "phone2_display": "+20 102 050 0504",
+    "phone2_tel": "+201020500504",
     "tagline": "Connecting Global Fertilizer Markets",
     "description": (
         "FORCE LINK GENERAL TRADING LLC is an Egyptian international trading company with branches in "
@@ -1175,7 +1175,7 @@ def contact_page():
     return page(
         path,
         "Contact FORCE LINK GENERAL TRADING LLC | Cairo and Dubai",
-        "Contact FORCE LINK GENERAL TRADING LLC, with offices in Cairo, Egypt and Dubai, UAE. Email info@forcelink-ae.com or call +971 50 944 1192 or +20 106 075 5683 to discuss fertilizer product requirements.",
+        "Contact FORCE LINK GENERAL TRADING LLC, with offices in Cairo, Egypt and Dubai, UAE. Email info@forcelink-ae.com or call +971 56 661 4040 or +20 102 050 0504 to discuss fertilizer product requirements.",
         body,
         current="contact",
         jsonld=[b for b in [breadcrumb_jsonld(trail)] if b],
