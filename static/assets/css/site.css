@@ -425,3 +425,11 @@ h3{font-size:1.2rem;font-weight:600}
   .vision-card p{font-size:16px}
   .vision-icon{width:56px;height:56px;margin-bottom:20px}
 }
+
+/* Sales figures, option A: year label, big number, gold rule, note (About page) */
+.metrics{border-top:3px solid var(--navy)}
+.metric-year{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--slate);margin:0 0 18px}
+.metric-rule{width:48px;height:4px;background:var(--gold);margin:22px 0}
+.metric-label{font-size:1rem;font-weight:500;color:var(--slate);margin:0}
+.metric-period{font-size:.98rem;color:var(--slate);margin:10px 0 0}
+

@@ -623,10 +623,13 @@ def product_card(p, root):
 def metric_block(key, root_count=True):
     s = SALES[key]
     year_text = "2025" if key == "y2025" else "2026"
+    caveat = "" if key == "y2025" else '<p class="metric-period">Year to date, not a full-year figure.</p>'
     return f"""<div class="metric reveal">
+  <p class="metric-year">{year_text}</p>
   <div class="metric-value"><span data-count="{s['value']}" data-decimals="{s['decimals']}">{s['value']}</span><span class="unit">M MT</span></div>
-  <p class="metric-label">{s['label']} in {year_text}</p>
-  <p class="metric-period">{esc(s['period'])}</p>
+  <div class="metric-rule" aria-hidden="true"></div>
+  <p class="metric-label">Metric tons sold, as reported by the company.</p>
+  {caveat}
 </div>"""
 
 
