@@ -28,6 +28,11 @@ SITE_URL = os.environ.get("SITE_URL", "").strip()
 if SITE_URL and not SITE_URL.endswith("/"):
     SITE_URL += "/"
 
+# Version strings for CSS and JS links, so browsers do not keep an old stylesheet after a change.
+import hashlib
+CSS_VERSION = hashlib.md5((STATIC / "assets/css/site.css").read_bytes()).hexdigest()[:10]
+JS_VERSION = hashlib.md5((STATIC / "assets/js/main.js").read_bytes()).hexdigest()[:10]
+
 # ---------------------------------------------------------------------------
 # Company data (single source of truth)
 # ---------------------------------------------------------------------------
@@ -533,7 +538,7 @@ def page(path, title, description, body, current="", jsonld=(), scripts=()):
         f'<script type="application/ld+json">{json.dumps(block, ensure_ascii=False)}</script>'
         for block in jsonld
     )
-    script_tags = "".join(f'<script src="{root}assets/js/{s}" defer></script>' for s in ("main.js",) + tuple(scripts))
+    script_tags = "".join(f'<script src="{root}assets/js/{s}?v={JS_VERSION}" defer></script>' for s in ("main.js",) + tuple(scripts))
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -545,7 +550,7 @@ def page(path, title, description, body, current="", jsonld=(), scripts=()):
 {canonical}
 {og}
 <link rel="icon" href="{root}assets/img/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="{root}assets/css/site.css">
+<link rel="stylesheet" href="{root}assets/css/site.css?v={CSS_VERSION}">
 {ld}
 </head>
 <body>
@@ -874,14 +879,14 @@ def about_page():
     </div>
     <div class="grid grid-2 vision-grid">
       <article class="vision-card">
-        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div>
+        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div>
         <span class="vision-bar" aria-hidden="true"></span>
         <span class="vision-tag">01</span>
         <h3>Our Value</h3>
         <p>We connect buyers with suitable products and sourcing opportunities through clear communication and tailored commercial solutions.</p>
       </article>
       <article class="vision-card">
-        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
         <span class="vision-bar" aria-hidden="true"></span>
         <span class="vision-tag">02</span>
         <h3>Our Vision</h3>
