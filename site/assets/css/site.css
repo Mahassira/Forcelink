@@ -407,9 +407,21 @@ h3{font-size:1.2rem;font-weight:600}
   .hero-soil--d{height:auto;aspect-ratio:1920/120}
 }
 
-/* Value and vision boxes (home page) */
+/* Our value and our vision (About page): two cards, same navy background */
 .vision-grid{gap:24px}
-.vision-box{background:#0E305D;color:#fff;border-radius:8px;padding:48px 40px;text-align:center}
-.vision-box h2{color:#fff;margin:0 0 16px}
-.vision-box p{color:#D6DEE9;margin:0;font-size:1.08rem;line-height:1.7}
-@media (max-width:760px){.vision-box{padding:36px 24px}}
+.vision-card{position:relative;overflow:hidden;background:#0E305D;color:#fff;border-radius:14px;padding:44px 40px;box-shadow:0 18px 40px rgba(14,48,93,.22);transition:transform .25s ease,box-shadow .25s ease}
+.vision-card::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;border:2px solid rgba(214,167,44,.35);pointer-events:none}
+.vision-card:hover{transform:translateY(-4px);box-shadow:0 26px 50px rgba(14,48,93,.30)}
+.vision-icon{width:64px;height:64px;border-radius:14px;background:rgba(214,167,44,.14);border:1px solid rgba(214,167,44,.5);display:grid;place-items:center;margin-bottom:26px}
+.vision-icon svg{width:30px;height:30px;stroke:#D6A72C;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.vision-bar{display:block;height:4px;width:64px;background:#D6A72C;border-radius:2px;margin-bottom:22px}
+.vision-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#D6A72C;margin-bottom:10px}
+.vision-card h3{color:#fff;font-size:30px;line-height:1.15;font-weight:800;margin:0 0 16px}
+.vision-card p{color:#D6DEE9;font-size:17px;line-height:1.7;margin:0;max-width:44ch;position:relative;z-index:1}
+@media (max-width:760px){
+  .vision-grid{gap:16px}
+  .vision-card{padding:32px 24px;border-radius:12px}
+  .vision-card h3{font-size:26px}
+  .vision-card p{font-size:16px}
+  .vision-icon{width:56px;height:56px;margin-bottom:20px}
+}

@@ -864,15 +864,29 @@ def about_page():
     band = cta_band(r, "Discuss your requirements with our team",
                     "Contact us to discuss product requirements, destination markets and potential trading opportunities.")
 
-    vision = f"""<section class="section" aria-label="Our value and vision">
-  <div class="container grid grid-2 vision-grid">
-    <div class="vision-box">
-      <h2>Our Value</h2>
-      <p>We connect buyers with suitable products and sourcing opportunities through clear communication and tailored commercial solutions.</p>
+    vision = f"""<section class="section" aria-labelledby="vision-heading">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <p class="eyebrow">Who we are</p>
+        <h2 id="vision-heading">Our value and our vision</h2>
+      </div>
     </div>
-    <div class="vision-box">
-      <h2>Our Vision</h2>
-      <p>To build trusted, long-term partnerships and strengthen our presence in global fertilizer markets.</p>
+    <div class="grid grid-2 vision-grid">
+      <article class="vision-card">
+        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></div>
+        <span class="vision-bar" aria-hidden="true"></span>
+        <span class="vision-tag">01</span>
+        <h3>Our Value</h3>
+        <p>We connect buyers with suitable products and sourcing opportunities through clear communication and tailored commercial solutions.</p>
+      </article>
+      <article class="vision-card">
+        <div class="vision-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></div>
+        <span class="vision-bar" aria-hidden="true"></span>
+        <span class="vision-tag">02</span>
+        <h3>Our Vision</h3>
+        <p>To build trusted, long-term partnerships and strengthen our presence in global fertilizer markets.</p>
+      </article>
     </div>
   </div>
 </section>"""
